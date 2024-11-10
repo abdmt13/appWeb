@@ -72,3 +72,6 @@ def closeUser(request):
 @login_required
 def home(request):
     return render(request, 'home.html')
+
+def registroDatosPersonales(request):
+    return render (request, "vistaApp/datosPersonales/registroDatos.html")
