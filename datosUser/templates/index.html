@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tortilleria Juarez</title>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="card" style="width: 18rem;">
+        <img src="..." class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">Bienvenido</h5>
+          <p class="card-text">Tus tortillas al alcance de tus manos</p>
+          <a href="{% url 'home' %}">
+            <button type="button" class="btn btn-primary mt-3" name="registroUser">Home</button>
+        </a>
+          
+          <a href="{% url 'iniciarSesionUser' %}">
+            <button type="button" class="btn btn-primary mt-3" name="registroUser">Iniciar sesión</button>
+        </a>
+            <a href="{% url 'registroUser' %}">
+                <button type="button" class="btn btn-primary mt-3" name="registroUser">Registrarse</button>
+            </a>
+            <a href="{% url 'closeUser' %}">
+                <button type="button" class="btn btn-primary mt-3" name="registroUser">cerrar sesion</button>
+            </a>
+
+            
+            
+           
+            
+        
+         
+
+        </div>
+    </div>
+    <div></div>
+    
+</body>
+</html>
