@@ -1,1 +1,18 @@
 <h1>hola</h1>
+<div class="form-container">
+    <h1>Registre sus datos</h1>
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    {% endif %}
+    <form method="POST" >
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if nombre and apellidos %}
+            <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+        {% else %}
+            <button type="submit" class="btn btn-primary mt-3">Editar</button>
+        {% endif %}
+    </form>
+</div>

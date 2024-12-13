@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
+from .forms import datosPersonalesForm
 
 
 
@@ -33,7 +34,7 @@ def registroUser(request):
                 login(request,user)
                 
                 print(user)
-                return redirect ('home')
+                return redirect ('registroDatosPersonales')
                 
             except IntegrityError:
                 return render (request, 'registroUser.html',{
@@ -61,7 +62,7 @@ def iniciarSesionUser(request):
              'error': 'el usuario o la contraseña son incorrectos'})
         else:
             login(request,user)
-            return(redirect('home'))
+            return(redirect('homePerfil'))
         
         
 def closeUser(request):
@@ -70,8 +71,28 @@ def closeUser(request):
     return redirect('index')
 
 @login_required
-def home(request):
-    return render(request, 'home.html')
+def homePerfil(request):
+    return render(request, 'vistaApp/homePerfil.html')
 
 def registroDatosPersonales(request):
-    return render (request, "vistaApp/datosPersonales/registroDatos.html")
+     # Obtener el usuario actual
+    user = request.user
+    nombre_vacio = not user.first_name.strip()  # Verifica si está vacío o solo espacios
+    apellido_vacio = not user.last_name.strip()  # Verifica si está vacío o solo espacios
+
+    
+    
+
+    if request.method == 'POST':
+        form = datosPersonalesForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('homePerfil')  # Cambia 'perfil' por la URL deseada  
+    else:
+        form = datosPersonalesForm(instance=user)
+        return render(request, 'vistaApp/datosPersonales/registroDatos.html', {'form': form, 'nombre':nombre_vacio, 'apellidos':apellido_vacio})
+
+def nuevoDomicilio(request):
+    # if request.method=="GET":
+    #     return render(request,'vistaApp/domicilios/nuevoDomicilio' context={'form':} )   
+    pass       
