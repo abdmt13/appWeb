@@ -16,6 +16,8 @@ from .models import Domicilio
 def index(request):
     return render(request, 'index.html')
 
+def home(request):
+    return render(request, 'home.html')
 #  esta funcion registra al usuario y lo autentica de una vez
 def registroUser(request):
     
@@ -120,5 +122,22 @@ def nuevoDomicilio(request):
             form = domicilioForm(user=request.user)
             return render(request,'vistaApp/domicilios/nuevoDomicilio.html', context={'form':form} ) 
             
-         
-         
+def editarDomicilio(request, id):
+    if request.method=="GET":
+        domicilio=Domicilio.objects.get(user=request.user, id=id)
+        print(F'esto es lo que trae el domicilio: {domicilio}')
+        form=domicilioForm(instance=domicilio)
+        return render(request, 'vistaApp/domicilios/editDomicilio.html', context={'form':form})
+        
+    else:
+        try:
+            domicilio=Domicilio.objects.get(user=request.user, id=id)
+            form=domicilioForm(request.POST, instance=domicilio)
+            if form.is_valid():
+                    domicilio = form.save(commit=False)
+                    domicilio.user = request.user
+                    domicilio.save()
+                    return redirect(homePerfil)
+        except:
+            form = domicilioForm(user=request.user)
+            return render(request,'vistaApp/domicilios/nuevoDomicilio.html', context={'form':form, 'error':'algo salio mal'} ) 
