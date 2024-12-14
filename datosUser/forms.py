@@ -11,9 +11,55 @@ class datosPersonalesForm(ModelForm):
         model=User
         fields=['first_name', 'last_name', 'email']
         
+class domicilioForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+            # Extraer el usuario de los argumentos
+            user = kwargs.pop('user', None)  # Extrae 'user' si está presente, de lo contrario, será None
+            super().__init__(*args, **kwargs)  # Inicializa el formulario base
+
+            if user:
+                nombre = user.first_name
+                apellido = user.last_name
+                # Configurar el valor inicial de 'nombreCompleto'
+                self.fields['nombreCompleto'].initial = f"{nombre} {apellido}"
+    
+    class Meta:
+        
+                
+        model=Domicilio
+        fields=['nombreCompleto', 'calle', 'entreCalle', 'referencia','telefono','municipio']
+        
+        widgets = {
+            'nombreCompleto': forms.TextInput(attrs={
+                'class': 'form-control',  # También puedes agregar clases CSS
+            }),
+            'calle': forms.NumberInput(attrs={
+                'placeholder': 'Ej: 16',
+                'class': 'form-control',
+            }),
+            'entreCalle': forms.TextInput(attrs={
+                'placeholder': 'Ej: 12 y 14',
+                'class': 'form-control',
+            }),
+            'referencia': forms.Textarea(attrs={
+                'placeholder': 'Descripción de la ubicación: casa color morada, hay un arbolito afuera',
+                'class': 'form-control',
+                'rows': 3,  # Controla el tamaño del área de texto
+            }),
+            'telefono': forms.NumberInput(attrs={
+                'placeholder': '9993954386',
+                'class': 'form-control',
+                  # Controla el tamaño del área de texto
+            }),
+            'municipio': forms.TextInput(attrs={
+                'placeholder': 'Ekmul',
+                'class': 'form-control',
+                 # Controla el tamaño del área de texto
+            }),
+        }
+        
+        
+        
         
 
-# class domicilioForm(ModelForm):
-#     class Meta:
-#         model=Domicilio
-#         field=['nombrecompleto', 'calle', 'entreCalle']        
+      

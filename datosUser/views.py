@@ -8,7 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
-from .forms import datosPersonalesForm
+from .forms import datosPersonalesForm, domicilioForm
+from .models import Domicilio
 
 
 
@@ -72,7 +73,9 @@ def closeUser(request):
 
 @login_required
 def homePerfil(request):
-    return render(request, 'vistaApp/homePerfil.html')
+    domicilios=Domicilio.objects.filter(user=request.user)
+    print(f'esto es  lo que trae domicilios {domicilios}')
+    return render(request, 'vistaApp/homePerfil.html', context={'domicilios':domicilios})
 
 def registroDatosPersonales(request):
      # Obtener el usuario actual
@@ -93,6 +96,29 @@ def registroDatosPersonales(request):
         return render(request, 'vistaApp/datosPersonales/registroDatos.html', {'form': form, 'nombre':nombre_vacio, 'apellidos':apellido_vacio})
 
 def nuevoDomicilio(request):
-    # if request.method=="GET":
-    #     return render(request,'vistaApp/domicilios/nuevoDomicilio' context={'form':} )   
-    pass       
+    numeroDomicilio=Domicilio.objects.filter(user=request.user).count()
+    print(f'este es el numero de domicilio {numeroDomicilio}')
+    if numeroDomicilio==3:
+        return render(request,'vistaApp/domicilios/nuevoDomicilio.html', context={'mensaje':True} ) 
+        
+    
+    
+    
+    if request.method=="GET":
+        form = domicilioForm(user=request.user)
+        return render(request,'vistaApp/domicilios/nuevoDomicilio.html', context={'form':form, 'numeroDomicilio':numeroDomicilio} )  
+    else:
+        try:
+            form=domicilioForm(request.POST)
+            print(f'esto trae el {form}')
+            if form.is_valid():
+                domicilio = form.save(commit=False)
+                domicilio.user = request.user
+                domicilio.save()
+                return redirect(homePerfil)
+        except:
+            form = domicilioForm(user=request.user)
+            return render(request,'vistaApp/domicilios/nuevoDomicilio.html', context={'form':form} ) 
+            
+         
+         

@@ -10,7 +10,7 @@ urlpatterns = [
     
     path("homePerfil/", views.homePerfil, name="homePerfil"),
     path("nuevodomicilio/", views.nuevoDomicilio, name="nuevoDomicilio"),
-    
+    # path('editardomicilio/<int:id>')
     
     
     path("registroDatosPersonales/", views.registroDatosPersonales, name="registroDatosPersonales")

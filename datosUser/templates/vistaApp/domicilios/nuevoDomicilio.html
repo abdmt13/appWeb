@@ -1,1 +1,26 @@
-<h1>hola, aqui puedes crear tus domicilios</h1>
+{% if mensaje %}
+
+    <h1>No puedes crear mas de 3 domicilios</h1>
+    <a href="{% url 'homePerfil' %}">
+        <button type="button" class="btn btn-primary mt-3" name="homePerfil">Aceptar</button>
+    </a>
+
+{% else %}
+
+    <h1>hola, aqui puedes crear tus domicilios</h1>
+    <div class="form-container">
+        
+
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+        <form method="POST" >
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+            
+        </form>
+    </div>
+{% endif %}

@@ -1,6 +1,12 @@
-<h1>hola</h1>
+
 <div class="form-container">
-    <h1>Registre sus datos</h1>
+    {% if nombre and apellidos %}
+    <h1>Para continuar, registre sus datos</h1>
+    {% else %}
+    <h1>Editar datos</h1>
+
+    {% endif %}
+
     {% if error %}
         <div class="alert alert-danger" role="alert">
             {{ error }}
@@ -13,6 +19,9 @@
             <button type="submit" class="btn btn-primary mt-3">Guardar</button>
         {% else %}
             <button type="submit" class="btn btn-primary mt-3">Editar</button>
+            <a href="{% url 'homePerfil' %}">
+                <button type="button" class="btn btn-primary mt-3" name="homePerfil">Cancelar</button>
+            </a>
         {% endif %}
     </form>
 </div>
