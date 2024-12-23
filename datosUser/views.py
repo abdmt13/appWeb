@@ -15,8 +15,9 @@ from .models import Domicilio
 
 def index(request):
     return render(request, 'index.html')
-
+@login_required
 def home(request):
+    # print(f'esto es lo que trae el request{request.session['first_name']}')
     return render(request, 'home.html')
 #  esta funcion registra al usuario y lo autentica de una vez
 def registroUser(request):
@@ -64,8 +65,10 @@ def iniciarSesionUser(request):
             {'form': AuthenticationForm,
              'error': 'el usuario o la contraseña son incorrectos'})
         else:
+            # valor=request.session.get['firt_name']
+            # print(f'esto es lo que trae el request{valor}')
             login(request,user)
-            return(redirect('homePerfil'))
+            return(redirect('home'))
         
         
 def closeUser(request):

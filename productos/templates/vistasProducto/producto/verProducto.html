@@ -1,0 +1,27 @@
+<h1>Productos</h1>
+<a href="{% url 'verProducto' %}">
+    <button type="button" class="btn btn-primary mt-3" name="registroUser"> Ver productos</button>
+</a>
+<a href="{% url 'agregarProducto' %}">
+    <button type="button" class="btn mt-3" name="registroUser"btn-primary > Crear producto</button>
+</a>
+<a href="{% url 'home' %}">
+    <button type="button" class="btn btn-primary mt-3" name="registroUser">Home</button>
+</a>
+<table>
+    {% for producto in productos %}
+
+    <p>{{ producto.nombre }}</p>
+    <p>${{ producto.precio }}</p>
+    <p>{{producto.descripcion}}</p>
+    {% if producto.estado %}
+    <!-- <p>Disponible</p> -->
+    <a href="{% url 'editarProducto' producto.id %}">
+        <button type="button">Editar</button>
+    </a>
+    {% else %}
+    <p>Agotado</p>
+    {% endif %}
+
+{% endfor %}
+</table>
