@@ -1,0 +1,15 @@
+<h1>Bienvenido</h1>
+{% if not productos %}
+<h4>aun no tiene agregado ningun producto</h4>
+{% else %}
+
+    {% for producto in productos %}
+
+    <p>{{producto.producto.nombre}}</p>
+    <p>{{producto.cantidad}}</p>
+    <p>precio unitario:{{producto.precio_unitario}}</p>
+    <p>subtotal:$ {{producto.subtotal}}</p>
+
+    {% endfor %}
+
+{% endif %} 

@@ -1,3 +1,6 @@
+{% extends "home.html" %}
+
+{% block content %}
 <h1>Bienvenido al menú de productos</h1>
 <a href="{% url 'verProducto' %}">
     <button type="button" class="btn btn-primary mt-3" name="registroUser"> Ver productos</button>
@@ -8,3 +11,5 @@
 <a href="{% url 'home' %}">
     <button type="button" class="btn btn-primary mt-3" name="registroUser">Home</button>
 </a>
+
+{% endblock %}

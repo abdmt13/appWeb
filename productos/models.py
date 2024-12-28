@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Producto(models.Model):
@@ -14,3 +15,4 @@ class Producto(models.Model):
     existencia=models.DecimalField(max_digits=9, decimal_places=0, blank=False)
     # imagen_referencia=models.ImageField()
     estado=models.BooleanField(help_text='disponibilidad')
+

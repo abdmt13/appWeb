@@ -5,6 +5,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import user_passes_test
 
 def in_group_administradores(user):
+    
     return user.groups.filter(name='admin').exists()
 
 
@@ -53,9 +54,9 @@ def editarProducto(request, id):
         
 def verProducto(request):
     productos=Producto.objects.all()
-    datos_sesion = request.session.items()
+    # datos_sesion = request.session.items()
 
     # Imprimir los datos
-    for clave, valor in datos_sesion:
-        print(f"esto trae el request:{clave}: {valor}")
+    # for clave, valor in datos_sesion:
+    #     print(f"esto trae el request:{clave}: {valor}")
     return render(request, 'vistasProducto/producto/verProducto.html', context={'productos':productos} )

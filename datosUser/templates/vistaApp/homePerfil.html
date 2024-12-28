@@ -1,3 +1,6 @@
+{% extends "home.html" %}
+
+{% block content %}
 <h1>bienvenido</h1>
 <a href="{% url 'registroDatosPersonales' %}">
     <button type="button" class="btn btn-primary mt-3" name="registroUser">Datos Personales</button>
@@ -19,9 +22,13 @@
 
 <h3>Domicilios</h3>
 {% for domicilio in domicilios %}
-    <ul>{{domicilio.calle}}</ul>
-    <ul>{{domicilio.referencia}}</ul>
+    <p>{{domicilio.calle}}</p>
+    <p>{{domicilio.referencia}}</p>
     <a href="{% url 'editarDomicilio' domicilio.id %}">
         <button type="button" class="btn btn-primary mt-3" name="editarDomicilio">editar</button>
+    </a>
 
 {% endfor %}
+
+
+{% endblock %}
