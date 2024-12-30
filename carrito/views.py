@@ -38,3 +38,19 @@ def agregarCarrito(request, producto_id):
     messages.success(request, f'{producto.nombre} se ha agregado al carrito.')
     return redirect('homeCarrito')
         
+        
+def restaCarrito(request, producto_id):
+    producto=ProductoCarrito.objects.get(id=producto_id)
+    producto.resta()
+    return redirect('homeCarrito')
+
+def sumaCarrito(request, producto_id):
+    producto=ProductoCarrito.objects.get(id=producto_id)
+    producto.suma()
+    print(f'esta cantidad tiene el producto en el carrito {producto.cantidad}')
+    return redirect("homeCarrito")
+
+def eliminar_del_carrito(request, producto_id):
+    producto=ProductoCarrito.objects.get(id=producto_id)
+    producto.eliminar()
+    return redirect ('homeCarrito')

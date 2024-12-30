@@ -9,7 +9,9 @@
     <p>{{producto.cantidad}}</p>
     <p>precio unitario:{{producto.precio_unitario}}</p>
     <p>subtotal:$ {{producto.subtotal}}</p>
-
+    <a href="{% url 'restaCarrito' producto.id %}">Resta</a>
+    <a href="{% url 'sumaCarrito' producto.id %}">suma</a>
+    <a href="{% url 'eliminar_del_carrito' producto.id %}">Eliminar</a>
     {% endfor %}
 
 {% endif %} 

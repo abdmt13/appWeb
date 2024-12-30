@@ -16,3 +16,18 @@ class ProductoCarrito(models.Model):
 
     def subtotal(self):
         return self.cantidad * self.precio_unitario
+    
+    
+    def resta(self):
+        if self.cantidad > 1:  # Reduce la cantidad si es mayor que 1
+            self.cantidad -= 1
+            self.save()  # Guarda los cambios
+        else:
+            self.delete()  # Elimina el registro si la cantidad llega a 0
+            
+    def suma(self):
+        self.cantidad +=1
+        self.save()
+        
+    def eliminar(self):
+        self.delete()
