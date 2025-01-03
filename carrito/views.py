@@ -54,3 +54,7 @@ def eliminar_del_carrito(request, producto_id):
     producto=ProductoCarrito.objects.get(id=producto_id)
     producto.eliminar()
     return redirect ('homeCarrito')
+
+
+# def comprar(request, producto_id):
+    

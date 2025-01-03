@@ -1,5 +1,6 @@
 from django.db import models
 from productos.models import Producto
+from datosUser.models import Domicilio
 from django.contrib.auth.models import User
 
 # Create your models here.
@@ -31,3 +32,36 @@ class ProductoCarrito(models.Model):
         
     def eliminar(self):
         self.delete()
+        
+        
+class Pedido(models.Model):
+    TIPOPEDIDO = [
+        ('D', 'Domicilio'),
+        ('E', 'Express'),
+        ('T', 'Tienda'),
+    ]
+    ESTATUS=[
+        ('E', 'Espera'),
+        ('C', 'En curso'),
+        ('F', 'Entregado'),
+    ]
+    
+    domicilio = models.ForeignKey(Domicilio, on_delete=models.CASCADE)
+    horario_entrega = models.DateTimeField()
+    tipo_pedido = models.CharField(max_length=1, choices=TIPOPEDIDO)
+    precio_total = models.DecimalField(max_digits=10, decimal_places=2)
+    estatus=models.CharField(max_length=1, choices=ESTATUS)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Pedido {self.id} - {self.get_tipo_pedido_display()}"
+
+    
+    
+class Pedido_Producto(models.Model):
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='productos')
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    unidad = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.unidad} x {self.producto.nombre} (Pedido {self.pedido.id})"
