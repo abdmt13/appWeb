@@ -16,7 +16,7 @@ class PedidoForm(ModelForm):
 class PedidoProductoForm(ModelForm):
     class Meta:
         model = Pedido_Producto
-        fields = ['producto', 'unidad']
+        fields = ['producto', 'cantidad']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

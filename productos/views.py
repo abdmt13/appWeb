@@ -26,7 +26,7 @@ def agregarProducto(request):
         
         try:
             form=productoForm(request.POST)
-            if form.is_valid:
+            if form.is_valid():
                 print(form)
                 producto=form.save(commit=False)
                 producto.save()

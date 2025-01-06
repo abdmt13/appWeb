@@ -8,12 +8,17 @@ class Carrito(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="carrito")  # Cada usuario tiene un único carrito
     creado_en = models.DateTimeField(auto_now_add=True)
     actualizado_en = models.DateTimeField(auto_now=True)
+    
+    
 
 class ProductoCarrito(models.Model):
     carrito = models.ForeignKey(Carrito, related_name="items", on_delete=models.CASCADE)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
     cantidad = models.PositiveIntegerField(default=1)
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    def __str__(self):
+        return f"Pedido {self.id} - {self.producto}"
 
     def subtotal(self):
         return self.cantidad * self.precio_unitario
@@ -32,6 +37,10 @@ class ProductoCarrito(models.Model):
         
     def eliminar(self):
         self.delete()
+    
+    def precio_total(self):
+        return self.precio_unitario * self.cantidad
+        
         
         
 class Pedido(models.Model):
@@ -41,27 +50,33 @@ class Pedido(models.Model):
         ('T', 'Tienda'),
     ]
     ESTATUS=[
+        ('X','Cancelado'),
         ('E', 'Espera'),
         ('C', 'En curso'),
         ('F', 'Entregado'),
     ]
     
     domicilio = models.ForeignKey(Domicilio, on_delete=models.CASCADE)
-    horario_entrega = models.DateTimeField()
-    tipo_pedido = models.CharField(max_length=1, choices=TIPOPEDIDO)
-    precio_total = models.DecimalField(max_digits=10, decimal_places=2)
-    estatus=models.CharField(max_length=1, choices=ESTATUS)
+    horario_entrega = models.DateTimeField(blank=True)
+    tipo_pedido = models.CharField(max_length=1, choices=TIPOPEDIDO, default='D')
+    precio_total = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    estatus=models.CharField(max_length=1, choices=ESTATUS, default='P')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Pedido {self.id} - {self.get_tipo_pedido_display()}"
+    
+    # def calcular_precio_total(user, id):
+    #     productos = ProductoCarrito.objects.filter(user=user).filter(id=id)
+    #     total = sum(item.producto.precio * item.cantidad for item in productos)
+    #     return total
 
     
     
 class Pedido_Producto(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='productos')
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
-    unidad = models.PositiveIntegerField(default=1)
+    cantidad = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return f"{self.unidad} x {self.producto.nombre} (Pedido {self.pedido.id})"
+        return f"{self.cantidad} x {self.producto.nombre} (Pedido {self.pedido.id})"

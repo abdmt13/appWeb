@@ -15,4 +15,18 @@ class Producto(models.Model):
     existencia=models.DecimalField(max_digits=9, decimal_places=0, blank=False)
     # imagen_referencia=models.ImageField()
     estado=models.BooleanField(help_text='disponibilidad')
+    
+    def __str__(self):
+        return f"Pedido {self.nombre} - {self.precio}"
 
+    def disminuir(self, cantidad=1):
+        if self.existencia>1:
+            self.existencia - cantidad
+            self.save()
+        else:
+            pass
+        
+        
+    def incrementar(self, cantidad):
+        self.existencia + cantidad
+        self.save()

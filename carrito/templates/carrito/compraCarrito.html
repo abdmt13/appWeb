@@ -1,0 +1,19 @@
+<h1>agregue los detalles del envio</h1>
+<p>{{error}}</p>
+
+
+
+<div class="form-container">
+        
+
+    <p>Producto:{{producto.producto.nombre}}</p>
+    <p>Unidad:{{producto.unidad}}</p>
+        
+    </form>
+    <form method="POST" >
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+        
+    </form>
+</div>
