@@ -76,6 +76,7 @@ def comprar(request, producto_id, origen=None):
             form = PedidoForm(request.POST, user=request.user)  # Formulario con datos del usuario
             
             if form.is_valid():
+                #aqui comienza el bloque donde creamos una instancia de nuestro modelo pedido
                 # Crear un objeto Pedido sin guardarlo aún
                 pedido = form.save(commit=False)
                 
@@ -88,14 +89,18 @@ def comprar(request, producto_id, origen=None):
                 # Guardar definitivamente en la base de datos
                 pedido.save()
                 
-                
+                #aqui comienza el bloque donde creamos una instancia de nuestro modelo pedido_producto
                 form=PedidoProductoForm()
                 pedidoProducto=form.save(commit=False)
                 pedidoProducto.pedido=pedido
                 pedidoProducto.producto=productoReal
                 
                 pedidoProducto.cantidad=productoCarrito.cantidad
+                #este atributo es de nuestro modelo Producto
+                productoCarrito.producto.disminuir(productoCarrito.cantidad)
+                #guardamos en la bd el producto o productos
                 pedidoProducto.save()
+                #eliminamos del carrito
                 productoCarrito.eliminar()
                 
                 
