@@ -1,0 +1,27 @@
+
+<h4>Ingrese el codigo del producto</h4>
+{% if formProducto %}
+{{error}}
+<form method="POST" action="{% url 'buscarProducto' %}">
+    {% csrf_token %}
+    {{ formProducto.as_p }}
+    <button type="submit" name="action" value="buscar" class="btn btn-primary">Buscar</button>
+</form>
+{% endif %}
+
+
+{% if producto %}
+<p>{{producto.nombre}}</p>
+<p>{{producto.existencia}}</p>
+<form method="POST" action="{% url 'ajusteInventario' producto.id %}">
+    {% csrf_token %}
+    {{ formInventario.as_p }}
+    <button type="submit" name="action" value="guardar" class="btn btn-primary">Buscar</button>
+</form>
+
+  {% elif error %}
+  <p>{{ error }}</p>
+{% endif %}
+
+  
+

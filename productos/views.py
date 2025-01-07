@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
-from .forms import productoForm
+from .forms import productoForm, BuscarProductoForm, AgregarInventarioForm
 from .models import Producto
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import user_passes_test
+
 
 def in_group_administradores(user):
     
@@ -15,13 +16,21 @@ def in_group_administradores(user):
 
 # Create your views here.
 def homeProductos(request):
-    return render (request, 'homeproductos.html')
+    form=BuscarProductoForm
+    productos=Producto.objects.all()
+    # datos_sesion = request.session.items()
+
+    # Imprimir los datos
+    # for clave, valor in datos_sesion:
+    #     print(f"esto trae el request:{clave}: {valor}")
+    return render(request, 'vistasProducto/verProducto.html', context={'productos':productos, 'form':form} )
+    # return render (request, 'homeproductos.html')
 
 @user_passes_test(in_group_administradores)
 def agregarProducto(request):
     if request.method =="GET":
         form=productoForm
-        return render (request, 'vistasProducto/producto/crearProducto.html', context={'form':form})
+        return render (request, 'vistasProducto/crearProducto.html', context={'form':form})
     else:
         
         try:
@@ -32,14 +41,14 @@ def agregarProducto(request):
                 producto.save()
                 return redirect(homeProductos)
         except:
-            return render(request, 'vistasProducto/producto/crearProducto.html', context={'form':form, 'error':'Algo ah salido mal, intente de nuevo'})
+            return render(request, 'vistasProducto/crearProducto.html', context={'form':form, 'error':'Algo ah salido mal, intente de nuevo'})
         
       
 def editarProducto(request, id):
     if request.method=="GET":
         producto=Producto.objects.get(id=id)
         form=productoForm(instance=producto)
-        return render(request, 'vistasProducto/producto/crearProducto.html', context={'form':form})
+        return render(request, 'vistasProducto/crearProducto.html', context={'form':form})
     else:
         try:
             producto=Producto.objects.get(id=id)
@@ -51,12 +60,75 @@ def editarProducto(request, id):
         except:
             print(f"algo ha salido mal con el form")
         
+def buscarProducto(request):
+    if request.method=='GET':
+        formProducto=BuscarProductoForm
+        return render(request, 'vistasProducto/inventario/ajuste_inventario.html', context={'formProducto':formProducto})
+    else:
+        producto=[]
+        accion = request.POST.get('action')
+        if accion =='buscar':
+            formProducto=BuscarProductoForm(request.POST)
+            if formProducto.is_valid():
+                codigo=formProducto.cleaned_data['codigo']
+                try:
+                    producto=Producto.objects.get(codigo=codigo)
+                    formInventario=AgregarInventarioForm
+                    print(producto)
+                    return render(request, 'vistasProducto/inventario/ajuste_inventario.html', { 'producto': producto, 'formInventario':formInventario})
+                except Producto.DoesNotExist:
+                    return render(request, 'vistasProducto/inventario/ajuste_inventario.html', {'form': formProducto, 'error': 'Producto no encontrado.'})
         
-def verProducto(request):
-    productos=Producto.objects.all()
-    # datos_sesion = request.session.items()
+            
+                    
+def ajusteInventario(request, producto_id):
+    if request.method=='POST':
+        formInventario = AgregarInventarioForm(request.POST)
+        producto=Producto.objects.get(id=producto_id)
+        if formInventario.is_valid():
+            try:
+                existencia = formInventario.cleaned_data['existencia']
+                print(f'esto es la existencia: {existencia}')
+                if existencia > 0:
+                    producto.incrementar(existencia)  # Incrementa la existencia
+                else:
+                    producto.disminuir(abs(existencia))  # Disminuye la existencia
+                return redirect('homeProductos')
+            except Exception as e:
+                print(f"Error: {e}")  # Imprime el error para depurar
+                return redirect('buscarProducto')
 
-    # Imprimir los datos
-    # for clave, valor in datos_sesion:
-    #     print(f"esto trae el request:{clave}: {valor}")
-    return render(request, 'vistasProducto/producto/verProducto.html', context={'productos':productos} )
+        # try:
+        #     producto=Producto.objects.get(id=producto_id)
+        #     print(producto)
+        #     formInventario=AgregarInventarioForm(request.POST)
+        #     existencia=formInventario.cleaned_data['existencia']
+            
+        #     if formInventario.is_valid():
+        #         print(f'esto trae el form{formInventario['existencia']} y este es el prodyucto que queremos modificar{producto}')
+                
+        #         print(f'esto es la existencia:{existencia}')
+        #         if existencia > 0:
+        #             producto.incrementar(producto, existencia)
+        #         else:
+        #             producto.disminuir(abs(existencia))
+                
+        #         return redirect('homeProducto')
+                    
+            
+        # except:
+        #     return redirect('buscarProducto')
+                  
+                
+            
+        
+        
+            
+# def verProducto(request):
+#     productos=Producto.objects.all()
+#     # datos_sesion = request.session.items()
+
+#     # Imprimir los datos
+#     # for clave, valor in datos_sesion:
+#     #     print(f"esto trae el request:{clave}: {valor}")
+#     return render(request, 'vistasProducto/producto/verProducto.html', context={'productos':productos} )
