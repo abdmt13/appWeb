@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from .forms import productoForm, BuscarProductoForm, AgregarInventarioForm
+from django.views.generic import ListView
+from .forms import productoForm, BuscarProductoForm, AgregarInventarioForm, CantidadForm
 from .models import Producto
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import user_passes_test
@@ -12,19 +13,30 @@ def in_group_administradores(user):
 
 
 
-
-
+# este es mi home, de aqui se imprimen todos los datos del producto
+class ProductosListaViews(ListView):
+    model=Producto
+    template_name = 'vistasProducto/verProducto.html'  # Tu plantilla
+    context_object_name = 'productos'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formCantidad']=CantidadForm()
+        # context['form'] = BuscarProductoForm()  # Agrega el formulario al contexto
+        
+        return context
+    
+    # def get_queryset(self):
+    #     query = self.request.GET.get('q')
+    #     if query:
+    #         return Producto.objects.filter(nombre__icontains=query)
+    #     return Producto.objects.all()
 # Create your views here.
-def homeProductos(request):
-    form=BuscarProductoForm
-    productos=Producto.objects.all()
-    # datos_sesion = request.session.items()
-
-    # Imprimir los datos
-    # for clave, valor in datos_sesion:
-    #     print(f"esto trae el request:{clave}: {valor}")
-    return render(request, 'vistasProducto/verProducto.html', context={'productos':productos, 'form':form} )
-    # return render (request, 'homeproductos.html')
+# def homeProductos(request):
+#     form=BuscarProductoForm
+#     productos=Producto.objects.all()
+    
+#     return render(request, 'vistasProducto/verProducto.html', context={'productos':productos, 'form':form} )
 
 @user_passes_test(in_group_administradores)
 def agregarProducto(request):
@@ -36,10 +48,11 @@ def agregarProducto(request):
         try:
             form=productoForm(request.POST)
             if form.is_valid():
-                print(form)
+                # print(form)
                 producto=form.save(commit=False)
+                
                 producto.save()
-                return redirect(homeProductos)
+                return redirect('homeProductos')
         except:
             return render(request, 'vistasProducto/crearProducto.html', context={'form':form, 'error':'Algo ah salido mal, intente de nuevo'})
         

@@ -7,7 +7,9 @@ from django.contrib.auth.models import User
 class productoForm(ModelForm):
     class Meta:      
         model=Producto
-        fields=['tipo', 'nombre', 'descripcion', 'precio','existencia','estado']   
+        fields=['tipo', 'nombre', 'descripcion', 'precio','existencia','estado'] 
+        if 'tipo'=='m':
+            exclude=['existencia']
         
         
 class BuscarProductoForm(forms.Form):
@@ -16,3 +18,6 @@ class BuscarProductoForm(forms.Form):
     
 class AgregarInventarioForm(forms.Form):
     existencia= forms.DecimalField(label="Ingrese Cantidad", decimal_places=0, max_digits=3, help_text='4 o +4 o -2')  
+    
+class CantidadForm(forms.Form):
+    cantidad=forms.DecimalField(label="Ingrese Cantidad", decimal_places=0, max_digits=2, help_text='de 1 a 99', initial=1)

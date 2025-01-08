@@ -1,5 +1,10 @@
+{% extends "home.html" %}
+
+{% block content %}
+
 <h1>Bienvenido</h1>
 <p>{{mensaje}}</p>
+<button>Mis pedidos</button>
 {% if not productos %}
 <h4>aun no tiene agregado ningun producto</h4>
 {% else %}
@@ -17,3 +22,5 @@
     {% endfor %}
 
 {% endif %} 
+
+{% endblock %}
