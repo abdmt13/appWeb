@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from decimal import Decimal 
 from django.contrib import messages
 from .models import Carrito, ProductoCarrito
 # from django.contrib.auth.models import User
@@ -27,7 +28,22 @@ def homeCarrito(request):
 
 def gestionarAccion(request, producto_id):
     if request.method =='POST':
+        # def cantidad():
         cantidad=CantidadForm(request.POST)
+        
+        if cantidad.is_valid():
+            cantidad_value = cantidad.cleaned_data['cantidad']
+            request.session['cantidad_value'] = float(cantidad_value)  # Guardamos el valor en la sesión
+            request.session.save()
+        cantidad_value = request.session.get('cantidad_value', None) 
+        
+       
+        cantidad_value = Decimal(cantidad_value)  # Convertirlo de nuevo a Decimal
+        
+
+        
+       
+        form = PedidoForm(user=request.user)
         # cantidad.cleaned_data['cantidad']
         # print(f'esto trae la cantidad {cantidad}')
             
@@ -42,25 +58,78 @@ def gestionarAccion(request, producto_id):
                 producto=productoReal,
                 defaults={'precio_unitario': productoReal.precio},
             )
-            if cantidad.is_valid():
-                if created:
-                    # Si el producto no existía, asignar la cantidad del formulario
-                    detalle.cantidad = cantidad.cleaned_data['cantidad']
-                else:
-                    # Si ya existía, sumar la cantidad del formulario
-                    detalle.cantidad += cantidad.cleaned_data['cantidad']
+            
+            if created:
+                # Si el producto no existía, asignar la cantidad del formulario
+                detalle.cantidad = cantidad_value
             else:
-                if not created:
-                    # Si el formulario no es válido y el producto ya existía, sumar 1
-                    detalle.cantidad += 1
+                # Si ya existía, sumar la cantidad del formulario
+                detalle.cantidad += cantidad_value
+            
+            # if not created:
+            #     # Si el formulario no es válido y el producto ya existía, sumar 1
+            #     detalle.cantidad += 1
             detalle.subtotal = detalle.cantidad * detalle.precio_unitario
             detalle.save()
 
             messages.success(request, f'{productoReal.nombre} se ha agregado al carrito.')
             return redirect('homeCarrito')
+        
         # aqui se compra desde producto home
+        elif accion=='comprar':
+            
+            datos_productos={'producto':productoReal,
+                            'unidad':cantidad_value}
+            return render(request, 'carrito/compraCarrito.html', {
+                'form': form,
+                'producto': datos_productos
+            })
+            
+            
         else:
-            print('estas comprando')
+            print('estoy enviando los datos del form y saltando todos los demas botones')
+            try:
+                form = PedidoForm(request.POST, user=request.user)
+                print(f'esto tra el form: {form}')
+                
+                precio_total= cantidad_value * productoReal.precio
+                print(f'esto tra el precio total: {precio_total}')
+                if form.is_valid():
+                
+                #aqui comienza el bloque donde creamos una instancia de nuestro modelo pedido
+              # Crear un objeto Pedido sin guardarlo aún
+                    pedido = form.save(commit=False)
+                
+            # #     # Asignar valores adicionales al pedido
+                    pedido.user = request.user
+                    pedido.precio_total = precio_total
+                    pedido.estatus = 'E'  # Estado "Espera"
+                    pedido.horario_entrega = now()
+                
+            # #     # Guardar definitivamente en la base de datos
+                    pedido.save()
+                
+            # #     #aqui comienza el bloque donde creamos una instancia de nuestro modelo pedido_producto
+                    form=PedidoProductoForm()
+                    pedidoProducto=form.save(commit=False)
+                    pedidoProducto.pedido=pedido
+                    pedidoProducto.producto=productoReal
+                
+                    pedidoProducto.cantidad=cantidad_value
+            # #     #este atributo es de nuestro modelo Producto
+            # #     productoCarrito.producto.disminuir(productoCarrito.cantidad)
+            # #     #guardamos en la bd el producto o productos
+                    pedidoProducto.save()
+                    print('se guardo la compra y el producto')
+                    return redirect('home')
+            # 
+                
+            except:
+                print('algo salio mal')
+                return redirect('homeProductos')
+                
+            
+            
         
         
 def restaCarrito(request, producto_id):
