@@ -3,6 +3,7 @@ from django.contrib import messages
 from .models import Carrito, ProductoCarrito
 # from django.contrib.auth.models import User
 from .forms import PedidoForm, PedidoProductoForm
+from productos.forms import CantidadForm
 from productos.models import Producto
 from django.utils.timezone import now
 
@@ -24,21 +25,42 @@ def homeCarrito(request):
     return render(request, 'carrito/homeCarrito.html', context={'productos': productos})
 
 
-def agregarCarrito(request, producto_id):
-    producto = get_object_or_404(Producto, id=producto_id)
-    carrito, created = Carrito.objects.get_or_create(user=request.user)
-    detalle, created = ProductoCarrito.objects.get_or_create(
-        carrito=carrito,
-        producto=producto,
-        defaults={'precio_unitario': producto.precio}
-    )
-    if not created:
-        detalle.cantidad += 1
-    detalle.subtotal = detalle.cantidad * detalle.precio_unitario
-    detalle.save()
+def gestionarAccion(request, producto_id):
+    if request.method =='POST':
+        cantidad=CantidadForm(request.POST)
+        # cantidad.cleaned_data['cantidad']
+        # print(f'esto trae la cantidad {cantidad}')
+            
+                
+        productoReal = get_object_or_404(Producto, id=producto_id)
+        accion = request.POST.get("accion")
+        if accion == 'agregar':
+            
+            carrito, created = Carrito.objects.get_or_create(user=request.user)
+            detalle, created = ProductoCarrito.objects.get_or_create(
+                carrito=carrito,
+                producto=productoReal,
+                defaults={'precio_unitario': productoReal.precio},
+            )
+            if cantidad.is_valid():
+                if created:
+                    # Si el producto no existía, asignar la cantidad del formulario
+                    detalle.cantidad = cantidad.cleaned_data['cantidad']
+                else:
+                    # Si ya existía, sumar la cantidad del formulario
+                    detalle.cantidad += cantidad.cleaned_data['cantidad']
+            else:
+                if not created:
+                    # Si el formulario no es válido y el producto ya existía, sumar 1
+                    detalle.cantidad += 1
+            detalle.subtotal = detalle.cantidad * detalle.precio_unitario
+            detalle.save()
 
-    messages.success(request, f'{producto.nombre} se ha agregado al carrito.')
-    return redirect('homeCarrito')
+            messages.success(request, f'{productoReal.nombre} se ha agregado al carrito.')
+            return redirect('homeCarrito')
+        # aqui se compra desde producto home
+        else:
+            print('estas comprando')
         
         
 def restaCarrito(request, producto_id):

@@ -35,10 +35,16 @@
                     <p class="card-text">${{ producto.precio }}</p>
                     {% if producto.estado %}
                         <a href="{% url 'editarProducto' producto.id %}" class="btn btn-primary">Editar</a>
-                        <form method="post">
+
+
+                        <form method="post" action="{% url 'gestionarAccion' producto.id %}">
+                            {% csrf_token %}
                             {{ formCantidad.as_p }}
 
-                            <a href="{% url 'agregarCarrito' producto.id %}" class="btn btn-primary">Agregar al carrito</a>
+                            <button type="submit" class="btn btn-primary mt-3" name="accion" value="agregar">Agregar</button>
+                            <button type="submit" name="accion" value="comprar">Comprar</button>
+
+                            
 
                         </form>
                         
