@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from decimal import Decimal 
 from django.contrib import messages
-from .models import Carrito, ProductoCarrito
+from .models import Carrito, ProductoCarrito, Producto
+from django.views.generic import ListView
 # from django.contrib.auth.models import User
 from .forms import PedidoForm, PedidoProductoForm
 from productos.forms import CantidadForm
-from productos.models import Producto
 from django.utils.timezone import now
 
 # Create your views here.
@@ -24,6 +24,19 @@ def homeCarrito(request):
     # Renderiza la plantilla con el contexto
     print(f"esto es lo que trae carritoUser{carritoUser} y esto trae productos{productos}")
     return render(request, 'carrito/homeCarrito.html', context={'productos': productos})
+
+
+class ProductosListaViews(ListView):
+    model=Producto
+    template_name = 'carrito/menuProducto.html'  # Tu plantilla
+    context_object_name = 'productos'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formCantidad']=CantidadForm()
+        # context['form'] = BuscarProductoForm()  # Agrega el formulario al contexto
+        
+        return context
 
 
 def gestionarAccion(request, producto_id):
@@ -120,13 +133,15 @@ def gestionarAccion(request, producto_id):
             # #     productoCarrito.producto.disminuir(productoCarrito.cantidad)
             # #     #guardamos en la bd el producto o productos
                     pedidoProducto.save()
+                    productoReal.disminuir(cantidad_value)
                     print('se guardo la compra y el producto')
                     return redirect('home')
             # 
                 
-            except:
-                print('algo salio mal')
-                return redirect('homeProductos')
+            except Exception as e:
+                    # Si ocurre un error, se captura y el usuario es redirigido
+                    print(f"Error: {e}")
+                    return redirect('homeProductos')
                 
             
             

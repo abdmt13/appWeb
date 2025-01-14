@@ -1,9 +1,11 @@
 from django.urls import path
 
 from . import views
+from .views import ProductosListaViews
 
 urlpatterns = [
     path("",views.homeCarrito, name='homeCarrito'),
+    path("menu", ProductosListaViews.as_view(), name='menu'),
     path("gestionarAccion/<int:producto_id>/", views.gestionarAccion, name="gestionarAccion"), 
     path("restaCarrito/<int:producto_id>/", views.restaCarrito, name="restaCarrito"),
     path("sumaCarrito/<int:producto_id>/", views.sumaCarrito, name="sumaCarrito"),
