@@ -1,0 +1,25 @@
+{
+  "name": "appweb",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node_modules/.bin/bulma-sass --output static/css/bulma.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abdmt13/appWeb.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/abdmt13/appWeb/issues"
+  },
+  "homepage": "https://github.com/abdmt13/appWeb#readme",
+  "dependencies": {
+    "bulma": "^1.0.3",
+    "sass": "^1.83.4"
+  }
+}

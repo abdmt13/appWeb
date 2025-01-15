@@ -78,12 +78,12 @@ WSGI_APPLICATION = 'myhome.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # Backend para MySQL
+        'ENGINE': 'django.db.backends.postgresql',  # Backend para postgresSQL
         'NAME': 'tortilleria',                 # Nombre de tu base de datos
-        'USER': 'root',                        # Usuario de la base de datos
-        'PASSWORD': '123456789',               # Contraseña del usuario
+        'USER': 'postgres',                        # Usuario de la base de datos
+        'PASSWORD': '12345678',               # Contraseña del usuario
         'HOST': 'localhost',                   # IP o nombre de host, 'localhost' para local
-        'PORT': '3306',                        # Puerto, por defecto es 3306
+        'PORT': '5432',                        # Puerto, por defecto es 3306
     }
 }
 
@@ -122,7 +122,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',  # Ajuste de ruta si la carpeta está en el nivel del proyecto
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
