@@ -11,6 +11,19 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from django.contrib.messages import constants as messages
+
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+# Opcional: personaliza las clases de mensaje
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +38,7 @@ SECRET_KEY = 'django-insecure-epssd3mt6q%bp@%#v5072j54do@n1+iog5+eyh%931+=hvz=b9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.1.86']
 
 
 # Application definition
@@ -40,6 +53,7 @@ INSTALLED_APPS = [
     'datosUser.apps.DatosuserConfig',
     'productos.apps.ProductosConfig',
     'carrito.apps.CarritoConfig',
+    'tortilleria.apps.TortilleriaConfig',
 ]
 
 MIDDLEWARE = [
@@ -61,6 +75,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'datosUser.context_processors.permisos_globales',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -126,6 +141,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',  # Ajuste de ruta si la carpeta está en el nivel del proyecto
 ]
+LOGIN_URL = '/iniciarSesionUser/'  # Ajusta esta URL según la ruta de tu vista de inicio de sesión
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

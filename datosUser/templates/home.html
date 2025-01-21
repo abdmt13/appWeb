@@ -26,12 +26,22 @@
           <li><a href="{% url 'homePerfil' %}">
             <button type="button" class="btn btn-primary mt-3" name="registroUser">Perfil</button>
             </a></li>
+            {% if permiso or super_user %}
+
           <li><a href="{% url 'homeProductos' %}">
             <button type="button" class="btn btn-primary mt-3" name="registroUser">Productos</button>
             </a></li>
             <li><a href="{% url 'menu' %}">
               <button type="button" class="btn btn-primary mt-3" name="menu">menu</button>
               </a></li>
+              <li><a href="{% url 'homeTortilleria' %}">
+                <button type="button" class="btn btn-primary mt-3" name="menu">Tortilleria</button>
+                </a></li>
+            {% else %}
+            <li><a href="{% url 'menu' %}">
+              <button type="button" class="btn btn-primary mt-3" name="menu">menu</button>
+              </a></li>
+              {% endif %}
             <li><a href="{% url 'homeCarrito' %}">
               <button type="button" class="btn btn-primary mt-3" name="registroUser">Carrito</button>
               </a></li>

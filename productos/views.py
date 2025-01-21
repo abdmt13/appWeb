@@ -3,18 +3,20 @@ from django.views.generic import ListView
 from .forms import productoForm, BuscarProductoForm, AgregarInventarioForm, CantidadForm
 from .models import Producto
 from django.contrib.auth.models import Group
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 def in_group_administradores(user):
     
-    return user.groups.filter(name='admin').exists()
+    return user.groups.filter(name='admi').exists()
 
 
 
 
 # este es mi home, de aqui se imprimen todos los datos del producto
-class ProductosListaViews(ListView):
+
+class ProductosListaViews(LoginRequiredMixin, ListView):
     model=Producto
     template_name = 'vistasProducto/verProducto.html'  # Tu plantilla
     context_object_name = 'productos'
@@ -39,6 +41,7 @@ class ProductosListaViews(ListView):
 #     return render(request, 'vistasProducto/verProducto.html', context={'productos':productos, 'form':form} )
 
 @user_passes_test(in_group_administradores)
+@login_required
 def agregarProducto(request):
     if request.method =="GET":
         form=productoForm
@@ -56,7 +59,7 @@ def agregarProducto(request):
         except:
             return render(request, 'vistasProducto/crearProducto.html', context={'form':form, 'error':'Algo ah salido mal, intente de nuevo'})
         
-      
+@login_required     
 def editarProducto(request, id):
     if request.method=="GET":
         producto=Producto.objects.get(id=id)
@@ -72,7 +75,7 @@ def editarProducto(request, id):
                 return redirect('verProducto')
         except:
             print(f"algo ha salido mal con el form")
-        
+@login_required        
 def buscarProducto(request):
     if request.method=='GET':
         formProducto=BuscarProductoForm
@@ -93,7 +96,7 @@ def buscarProducto(request):
                     return render(request, 'vistasProducto/inventario/ajuste_inventario.html', {'form': formProducto, 'error': 'Producto no encontrado.'})
         
             
-                    
+@login_required                   
 def ajusteInventario(request, producto_id):
     if request.method=='POST':
         formInventario = AgregarInventarioForm(request.POST)

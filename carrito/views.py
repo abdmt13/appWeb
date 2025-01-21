@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import user_passes_test, login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from decimal import Decimal 
 from django.contrib import messages
-from .models import Carrito, ProductoCarrito, Producto
+from .models import Carrito, ProductoCarrito, Producto, Pedido, Pedido_Producto
 from django.views.generic import ListView
 # from django.contrib.auth.models import User
 from .forms import PedidoForm, PedidoProductoForm
@@ -9,7 +11,7 @@ from productos.forms import CantidadForm
 from django.utils.timezone import now
 
 # Create your views here.
-
+@login_required
 def homeCarrito(request):
     try:
         # Obtén el carrito del usuario
@@ -26,7 +28,7 @@ def homeCarrito(request):
     return render(request, 'carrito/homeCarrito.html', context={'productos': productos})
 
 
-class ProductosListaViews(ListView):
+class ProductosListaViews(LoginRequiredMixin,ListView):
     model=Producto
     template_name = 'carrito/menuProducto.html'  # Tu plantilla
     context_object_name = 'productos'
@@ -38,7 +40,7 @@ class ProductosListaViews(ListView):
         
         return context
 
-
+@login_required
 def gestionarAccion(request, producto_id):
     if request.method =='POST':
         # def cantidad():
@@ -106,6 +108,7 @@ def gestionarAccion(request, producto_id):
                 print(f'esto tra el form: {form}')
                 
                 precio_total= cantidad_value * productoReal.precio
+                restaExistencia = productoReal.existencia - cantidad_value
                 print(f'esto tra el precio total: {precio_total}')
                 if form.is_valid():
                 
@@ -120,7 +123,7 @@ def gestionarAccion(request, producto_id):
                     pedido.horario_entrega = now()
                 
             # #     # Guardar definitivamente en la base de datos
-                    pedido.save()
+                    
                 
             # #     #aqui comienza el bloque donde creamos una instancia de nuestro modelo pedido_producto
                     form=PedidoProductoForm()
@@ -132,10 +135,21 @@ def gestionarAccion(request, producto_id):
             # #     #este atributo es de nuestro modelo Producto
             # #     productoCarrito.producto.disminuir(productoCarrito.cantidad)
             # #     #guardamos en la bd el producto o productos
-                    pedidoProducto.save()
-                    productoReal.disminuir(cantidad_value)
-                    print('se guardo la compra y el producto')
-                    return redirect('home')
+                    if productoReal.existencia - cantidad_value >= 0:
+                        productoReal.disminuir(cantidad_value)
+                        pedido.save()
+                        pedidoProducto.save()
+                        messages.success(request, 'Compra exitosa, espere a que tomen su pedido')
+                        return redirect('homeProductos')
+                    else:
+                        messages.error(request, 'La cantidad seleccionada excede la existencia.')
+                        return redirect('homeProductos')  # Ajusta según el nombre de tu URL para ProductosListaViews
+                        productos=Producto.objects.all()
+                        return render(request, 'vistasProducto/verProducto.html', context={
+                            'productos':productos,
+                            'error': 'La cantidad seleccionada exece la existencia'
+                        })
+                                
             # 
                 
             except Exception as e:
@@ -146,24 +160,26 @@ def gestionarAccion(request, producto_id):
             
             
         
-        
+@login_required        
 def restaCarrito(request, producto_id):
     producto=ProductoCarrito.objects.get(id=producto_id)
     producto.resta()
     return redirect('homeCarrito')
 
+@login_required
 def sumaCarrito(request, producto_id):
     producto=ProductoCarrito.objects.get(id=producto_id)
     producto.suma()
     print(f'esta cantidad tiene el producto en el carrito {producto.cantidad}')
     return redirect("homeCarrito")
 
+@login_required
 def eliminar_del_carrito(request, producto_id):
     producto=ProductoCarrito.objects.get(id=producto_id)
     producto.eliminar()
     return redirect ('homeCarrito')
 
-
+@login_required
 def comprar(request, producto_id, origen=None):
     if origen == 'fromhomecarrito':
         try:
@@ -230,3 +246,13 @@ def comprar(request, producto_id, origen=None):
                 'form': form,
                 'producto': datos_producto
             })
+
+
+# def cobroEnTienda(request):
+#     pedidos=Pedido.objects.all()
+#     compras=[]
+#     for pedido in pedidos:
+#         pedidosProducto=Pedido_Producto.objects.get(pedido=pedido)
+#         compras +=[pedidosProducto]
+#     print(compras)
+#     return render (request, 'cobroTienda.html')

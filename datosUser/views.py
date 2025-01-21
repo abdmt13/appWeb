@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 # from django.core.exceptions import ObjectDoesNotExist
 # from django.http import HttpResponse
+from django.contrib.auth.models import Group
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -17,9 +18,13 @@ def index(request):
     return render(request, 'index.html')
 @login_required
 def home(request):
+    permiso = request.user.groups.filter(name='admi').exists()  # Verifica si el usuario está en el grupo 'admi'
+    super_user = request.user.is_superuser 
     # print(f'esto es lo que trae el request{request.session['first_name']}')
-    return render(request, 'home.html')
+    return render(request, 'home.html', context={'permiso': permiso,
+        'super_user': super_user})
 #  esta funcion registra al usuario y lo autentica de una vez
+
 def registroUser(request):
     
     if request.method == 'GET':
@@ -77,11 +82,14 @@ def closeUser(request):
     return redirect('index')
 
 @login_required
+
 def homePerfil(request):
+    
     domicilios=Domicilio.objects.filter(user=request.user)
     print(f'esto es  lo que trae domicilios {domicilios}')
     return render(request, 'vistaApp/homePerfil.html', context={'domicilios':domicilios})
 
+@login_required
 def registroDatosPersonales(request):
      # Obtener el usuario actual
     user = request.user
@@ -100,6 +108,7 @@ def registroDatosPersonales(request):
         form = datosPersonalesForm(instance=user)
         return render(request, 'vistaApp/datosPersonales/registroDatos.html', {'form': form, 'nombre':nombre_vacio, 'apellidos':apellido_vacio})
 
+@login_required
 def nuevoDomicilio(request):
     numeroDomicilio=Domicilio.objects.filter(user=request.user).count()
     print(f'este es el numero de domicilio {numeroDomicilio}')
@@ -124,7 +133,8 @@ def nuevoDomicilio(request):
         except:
             form = domicilioForm(user=request.user)
             return render(request,'vistaApp/domicilios/nuevoDomicilio.html', context={'form':form} ) 
-            
+
+@login_required           
 def editarDomicilio(request, id):
     if request.method=="GET":
         domicilio=Domicilio.objects.get(user=request.user, id=id)

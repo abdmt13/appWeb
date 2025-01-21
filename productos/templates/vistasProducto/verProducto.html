@@ -4,6 +4,15 @@
 {% extends "home.html" %}
 
 {% block content %}
+{% if messages %}
+    <div>
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
 <h1>Productos</h1>
 <a href="{% url 'homeProductos' %}">
     <button type="button" class="btn btn-primary mt-3" name="registroUser"> Home Productos</button>
