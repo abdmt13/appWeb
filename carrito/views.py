@@ -41,6 +41,7 @@ class ProductosListaViews(LoginRequiredMixin,ListView):
         return context
 
 @login_required
+# esta vista esta para comprar o agregar desde homeProducto
 def gestionarAccion(request, producto_id):
     if request.method =='POST':
         # def cantidad():
@@ -90,7 +91,7 @@ def gestionarAccion(request, producto_id):
             messages.success(request, f'{productoReal.nombre} se ha agregado al carrito.')
             return redirect('homeCarrito')
         
-        # aqui se compra desde producto home
+        # aqui se compra desde producto homeProducto
         elif accion=='comprar':
             
             datos_productos={'producto':productoReal,
@@ -135,21 +136,25 @@ def gestionarAccion(request, producto_id):
             # #     #este atributo es de nuestro modelo Producto
             # #     productoCarrito.producto.disminuir(productoCarrito.cantidad)
             # #     #guardamos en la bd el producto o productos
-                    if productoReal.existencia - cantidad_value >= 0:
-                        productoReal.disminuir(cantidad_value)
+                    if productoReal.tipo=='m':
                         pedido.save()
                         pedidoProducto.save()
                         messages.success(request, 'Compra exitosa, espere a que tomen su pedido')
                         return redirect('homeProductos')
+                        
+                        
                     else:
-                        messages.error(request, 'La cantidad seleccionada excede la existencia.')
-                        return redirect('homeProductos')  # Ajusta según el nombre de tu URL para ProductosListaViews
-                        productos=Producto.objects.all()
-                        return render(request, 'vistasProducto/verProducto.html', context={
-                            'productos':productos,
-                            'error': 'La cantidad seleccionada exece la existencia'
-                        })
-                                
+                        if productoReal.existencia - cantidad_value >= 0:
+                            productoReal.disminuir(cantidad_value)
+                            pedido.save()
+                            pedidoProducto.save()
+                            messages.success(request, 'Compra exitosa, espere a que tomen su pedido')
+                            return redirect('homeProductos')
+                        else:
+                            messages.error(request, 'La cantidad seleccionada excede la existencia.')
+                            return redirect('homeProductos')  # Ajusta según el nombre de tu URL para ProductosListaViews
+                           
+                            
             # 
                 
             except Exception as e:
@@ -179,8 +184,9 @@ def eliminar_del_carrito(request, producto_id):
     producto.eliminar()
     return redirect ('homeCarrito')
 
+# este es el boton de comprar en el homeCarrito
 @login_required
-def comprar(request, producto_id, origen=None):
+def comprar(request, producto_id=None, origen=None):
     if origen == 'fromhomecarrito':
         try:
             # este trae el producto que se quiere comprar
@@ -208,8 +214,6 @@ def comprar(request, producto_id, origen=None):
                 pedido.estatus = 'E'  # Estado "Espera"
                 pedido.horario_entrega = now()
                 
-                # Guardar definitivamente en la base de datos
-                pedido.save()
                 
                 #aqui comienza el bloque donde creamos una instancia de nuestro modelo pedido_producto
                 form=PedidoProductoForm()
@@ -218,15 +222,26 @@ def comprar(request, producto_id, origen=None):
                 pedidoProducto.producto=productoReal
                 
                 pedidoProducto.cantidad=productoCarrito.cantidad
-                #este atributo es de nuestro modelo Producto
-                productoCarrito.producto.disminuir(productoCarrito.cantidad)
-                #guardamos en la bd el producto o productos
-                pedidoProducto.save()
-                #eliminamos del carrito
-                productoCarrito.eliminar()
+                if productoReal.tipo=='m':
+                        pedido.save()
+                        pedidoProducto.save()
+                        productoCarrito.eliminar()
+                        messages.success(request, 'Compra exitosa, espere a que tomen su pedido')
+                        return redirect('homeProductos')
+                        
+                        
+                else:
+                    if productoReal.existencia - productoCarrito.cantidad >= 0:
+                            productoReal.disminuir(productoCarrito.cantidad)
+                            pedido.save()
+                            pedidoProducto.save()
+                            productoCarrito.eliminar()
+                            messages.success(request, 'Compra exitosa, espere a que tomen su pedido')
+                            return redirect('homeProductos')
+                    else:
+                        messages.error(request, 'La cantidad seleccionada excede la existencia.')
+                        return redirect('homeProductos')  # Ajusta según el nombre de tu URL para ProductosListaViews
                 
-                
-                return render(request, 'carrito/homeCarrito.html', context={'mensaje': 'Su pedido está en espera.', 'productos':carrito})
             else:
                 # Si el formulario no es válido
                 return render(request, 'carrito/compraCarrito.html', {
@@ -248,11 +263,52 @@ def comprar(request, producto_id, origen=None):
             })
 
 
-# def cobroEnTienda(request):
-#     pedidos=Pedido.objects.all()
-#     compras=[]
-#     for pedido in pedidos:
-#         pedidosProducto=Pedido_Producto.objects.get(pedido=pedido)
-#         compras +=[pedidosProducto]
-#     print(compras)
-#     return render (request, 'cobroTienda.html')
+def comprarfromhome(request):
+    if request.method=='POST':
+        pedidoform=PedidoForm(request.POST, user=request.user)
+        pedidoproductoform=PedidoProductoForm(request.POST)
+        
+        try:
+            if pedidoform.is_valid() and pedidoproductoform.is_valid():
+                productoReal=pedidoproductoform.cleaned_data['producto']
+                cantidad=pedidoproductoform.cleaned_data['cantidad']
+                precio_total=cantidad * productoReal.precio
+                print(f'esto es pedido{pedidoform} y esto el producto con la cantidad{pedidoproductoform}, esto es el precio total{precio_total}')
+                pedido=pedidoform.save(commit=False)
+                pedido.user = request.user
+                pedido.precio_total = precio_total
+                pedido.estatus = 'E'  # Estado "Espera"
+                pedido.horario_entrega = now()
+                
+                pedidoproducto=pedidoproductoform.save(commit=False)
+                pedidoproducto.pedido=pedido
+                pedidoproducto.producto=productoReal
+                pedidoproducto.cantidad=cantidad
+                if productoReal.tipo=='m':
+                    pedido.save()
+                    pedidoproducto.save()
+                    # productoCarrito.eliminar()
+                    messages.success(request, 'Compra exitosa, espere a que tomen su pedido')
+                    return redirect('home')
+                            
+                            
+                else:
+                    if productoReal.existencia - cantidad >= 0:
+                        productoReal.disminuir(cantidad)
+                        pedido.save()
+                        pedidoproducto.save()
+                            # productoCarrito.eliminar()
+                        messages.success(request, 'Compra exitosa, espere a que tomen su pedido')
+                        return redirect('home')
+                    else:
+                        messages.error(request, 'La cantidad seleccionada excede la existencia.')
+                        return redirect('home')  # Ajusta según el nombre de tu URL para ProductosListaViews
+        except:
+            messages.error(request, 'algo salio mal, intente de nuevo.')
+            return redirect('home')
+            
+            
+        
+            
+        
+        

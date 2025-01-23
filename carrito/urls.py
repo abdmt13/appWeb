@@ -12,7 +12,7 @@ urlpatterns = [
     path('comprar/<int:producto_id>/<str:origen>/', views.comprar, name="comprar"),
     path("eliminar_del_carrito/<int:producto_id>/", views.eliminar_del_carrito, name="eliminar_del_carrito"),
     
-    
+    path('comprarfromhome/', views.comprarfromhome, name='comprarfromhome'),
     # path('cobro_en_tienda', views.cobroEnTienda, name='cobroEnTienda'),
     
 ]

@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
 from .forms import datosPersonalesForm, domicilioForm
+from carrito.forms import PedidoForm, PedidoProductoForm
 from .models import Domicilio
 
 
@@ -18,11 +19,13 @@ def index(request):
     return render(request, 'index.html')
 @login_required
 def home(request):
-    permiso = request.user.groups.filter(name='admi').exists()  # Verifica si el usuario está en el grupo 'admi'
-    super_user = request.user.is_superuser 
-    # print(f'esto es lo que trae el request{request.session['first_name']}')
-    return render(request, 'home.html', context={'permiso': permiso,
-        'super_user': super_user})
+    if request.method =='GET':
+        pedidoform=PedidoForm(user=request.user)
+        pedidoproductoform=PedidoProductoForm()
+        permiso = request.user.groups.filter(name='admi').exists()  # Verifica si el usuario está en el grupo 'admi'
+        super_user = request.user.is_superuser 
+        # {'permiso': permiso,'super_user': super_user}
+        return render(request, 'home.html', context={'pedidoform':pedidoform, 'pedidoproductoform':pedidoproductoform})
 #  esta funcion registra al usuario y lo autentica de una vez
 
 def registroUser(request):

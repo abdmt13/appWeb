@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 def in_group_administradores(user):
     
-    return user.groups.filter(name='admi').exists()
+    return user.groups.filter(name='admi').exists() or user.is_superuser
 
 
 
@@ -62,17 +62,21 @@ def agregarProducto(request):
 @login_required     
 def editarProducto(request, id):
     if request.method=="GET":
+        print('estoy en el get')
         producto=Producto.objects.get(id=id)
         form=productoForm(instance=producto)
         return render(request, 'vistasProducto/crearProducto.html', context={'form':form})
+        
     else:
+        print('estoy en el post')
         try:
+            
             producto=Producto.objects.get(id=id)
             form=productoForm(request.POST, instance=producto)
             if form.is_valid():
                 form.save()
                 print(f"esto es lo que debe de guardar el form:{form}")
-                return redirect('verProducto')
+                return redirect('homeProductos')
         except:
             print(f"algo ha salido mal con el form")
 @login_required        

@@ -52,9 +52,26 @@
 
       </ul>
      {% endblock %}
+     
       </div>
       <div class="col-sm-10 ">
-      {% block content %} {% endblock %}
+      {% block content %}
+      <form method="post" action="{% url 'comprarfromhome' %}">
+        {% csrf_token %}
+        {{ pedidoform.as_p }}
+        {{ pedidoproductoform.as_p }}
+
+        
+        <button type="submit" name="accion" value="comprar">Comprar</button>
+
+        
+
+    </form>
+      
+      
+      
+      
+      {% endblock %}
       </div>
     </div>
 
