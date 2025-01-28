@@ -1,0 +1,9 @@
+{% for pedido in pedidos %}
+
+{% for producto in pedido.productos.all %}
+<p>producto: {{producto.producto.nombre}}</p>
+<p>cantidad: {{producto.cantidad}}</p>
+<p>precio total:{{pedido.precio_total}}</p>
+{% endfor %}
+
+{% endfor %}

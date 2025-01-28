@@ -6,26 +6,31 @@ from django.contrib import messages
 from .models import Carrito, ProductoCarrito, Producto, Pedido, Pedido_Producto
 from django.views.generic import ListView
 # from django.contrib.auth.models import User
-from .forms import PedidoForm, PedidoProductoForm
+from .forms import PedidoForm, PedidoProductoForm, Checkbox
 from productos.forms import CantidadForm
 from django.utils.timezone import now
 
 # Create your views here.
 @login_required
 def homeCarrito(request):
-    try:
-        # Obtén el carrito del usuario
-        carritoUser = Carrito.objects.get(user=request.user)
-        # Filtra los productos del carrito
-        productos = ProductoCarrito.objects.filter(carrito=carritoUser)
-    except Carrito.DoesNotExist:
-        # Si no existe un carrito, los productos serán una lista vacía
-        carritoUser=None
-        productos = []
+    if request.method=='GET':
+        try:
+            seleccionform=Checkbox()
+            # Obtén el carrito del usuario
+            carritoUser = Carrito.objects.get(user=request.user)
+            # Filtra los productos del carrito
+            productos = ProductoCarrito.objects.filter(carrito=carritoUser)
+        except Carrito.DoesNotExist:
+            # Si no existe un carrito, los productos serán una lista vacía
+            carritoUser=None
+            productos = []
+            
 
-    # Renderiza la plantilla con el contexto
-    print(f"esto es lo que trae carritoUser{carritoUser} y esto trae productos{productos}")
-    return render(request, 'carrito/homeCarrito.html', context={'productos': productos})
+        # Renderiza la plantilla con el contexto
+        print(f"esto es lo que trae carritoUser{carritoUser} y esto trae productos{productos}")
+        return render(request, 'carrito/homeCarrito.html', context={'productos': productos, 'seleccionform':seleccionform,
+                                                                    'mensaje':'hola usuario'
+                                                                    })
 
 
 class ProductosListaViews(LoginRequiredMixin,ListView):
@@ -39,6 +44,30 @@ class ProductosListaViews(LoginRequiredMixin,ListView):
         # context['form'] = BuscarProductoForm()  # Agrega el formulario al contexto
         
         return context
+
+
+            
+            
+        
+@login_required        
+def restaCarrito(request, producto_id):
+    producto=ProductoCarrito.objects.get(id=producto_id)
+    producto.resta()
+    return redirect('homeCarrito')
+
+@login_required
+def sumaCarrito(request, producto_id):
+    producto=ProductoCarrito.objects.get(id=producto_id)
+    producto.suma()
+    print(f'esta cantidad tiene el producto en el carrito {producto.cantidad}')
+    return redirect("homeCarrito")
+
+@login_required
+def eliminar_del_carrito(request, producto_id):
+    producto=ProductoCarrito.objects.get(id=producto_id)
+    producto.eliminar()
+    return redirect ('homeCarrito')
+
 
 @login_required
 # esta vista esta para comprar o agregar desde homeProducto
@@ -89,7 +118,7 @@ def gestionarAccion(request, producto_id):
             detalle.save()
 
             messages.success(request, f'{productoReal.nombre} se ha agregado al carrito.')
-            return redirect('homeCarrito')
+            return redirect('homeProductos')
         
         # aqui se compra desde producto homeProducto
         elif accion=='comprar':
@@ -162,28 +191,6 @@ def gestionarAccion(request, producto_id):
                     print(f"Error: {e}")
                     return redirect('homeProductos')
                 
-            
-            
-        
-@login_required        
-def restaCarrito(request, producto_id):
-    producto=ProductoCarrito.objects.get(id=producto_id)
-    producto.resta()
-    return redirect('homeCarrito')
-
-@login_required
-def sumaCarrito(request, producto_id):
-    producto=ProductoCarrito.objects.get(id=producto_id)
-    producto.suma()
-    print(f'esta cantidad tiene el producto en el carrito {producto.cantidad}')
-    return redirect("homeCarrito")
-
-@login_required
-def eliminar_del_carrito(request, producto_id):
-    producto=ProductoCarrito.objects.get(id=producto_id)
-    producto.eliminar()
-    return redirect ('homeCarrito')
-
 # este es el boton de comprar en el homeCarrito
 @login_required
 def comprar(request, producto_id=None, origen=None):
@@ -262,7 +269,7 @@ def comprar(request, producto_id=None, origen=None):
                 'producto': datos_producto
             })
 
-
+#este es la logica para comprar en el formulario de home
 def comprarfromhome(request):
     if request.method=='POST':
         pedidoform=PedidoForm(request.POST, user=request.user)
@@ -307,8 +314,127 @@ def comprarfromhome(request):
             messages.error(request, 'algo salio mal, intente de nuevo.')
             return redirect('home')
             
+#este es la logica para comprar todo el carrito            
+def comprar_listacarrito(request):
+    if request.method=='POST':
+        accion = request.POST.get("accion")
+          
+        if accion=='comprar_todo':
+            try:
+                seleccionados = request.POST.getlist('seleccionados') 
+                request.session['seleccionados'] = seleccionados
+                print(f'Guardado en la sesión: {request.session["seleccionado"]}') 
+                request.session.save()
+                
+                carrito=Carrito.objects.get(user=request.user) 
+                
+                
+                print(f'{seleccionados}') 
+                subtotal=0.0
+                carritoProductos=[]
+                for producto_id in seleccionados:
+                    print(producto_id)
+                    producto=ProductoCarrito.objects.filter(carrito=carrito, id=int(producto_id))
+                    print(f'esto trae {producto}')
+                    for elemento in producto:
+                        
+                        total=float(elemento.cantidad) * float(elemento.precio_unitario)
+                        subtotal+=total
+                    # Agregar al carrito en formato de diccionario
+                        carritoProductos.append({
+                            'id': elemento.id,
+                            'nombre': elemento.producto.nombre,  # Asegúrate de que este campo exista
+                            'cantidad': int(elemento.cantidad),  # Convertir cantidad a entero
+                            'precio_unitario': float(elemento.precio_unitario),  # Convertir a float
+                            'total': float(total) 
+                                    })
+                    request.session['subtotal'] = float(subtotal)
+                    request.session.save()
+                
+                    
+                print(f'estos son los prodductos{carritoProductos}')
+                
+                
+                    
+            except:
+                seleccionados=[]
+                # carrito=None
+                # carritoProductos=None
+            print('dentro de accion')
+           
+
+           
+            form = PedidoForm(user=request.user)
+            return render(request, 'carrito/compraCarrito.html', {
+                    'form': form,
+                    'productos':carritoProductos,
+                    'subtotal':subtotal
+                    
+                })
+        # proceso que hace que guarde los datos que queremos comprar
+        else:
+            seleccionados = [int(id) for id in request.session.get('seleccionados', [])]
+            print(f'esto me trae seleccionados del else{seleccionados}')
+            subtotal = Decimal(request.session.get('subtotal', 0))
             
+            form=PedidoForm(request.POST, user=request.user)
+            # print(f'esto trae el carrito{carritoProductos[1]['id']}')
         
+
+            if form.is_valid():
+                print(f'form ya validado')
+                pedido=form.save(commit=False)
+                pedido.user=request.user
+                pedido.horario_entrega=now()
+                pedido.estatus='p'
+                pedido.precio_total=subtotal
+                # pedido.save()
+                print(f'esto trae el pedido preguardado{pedido}')
+                try:
+                    print('estra al try')
+                    # print(f'Tipo de carritoProductos: {type(carritoProductos[1])}')
+                    pedido.save()
+                    for id in seleccionados:
+                        
+                        producto=ProductoCarrito.objects.get(id=id)
+                        print(f'Elemento del carrito: {producto}, Tipo: {type(producto)}')
+                        Pedido_Producto.objects.create(
+                            pedido=pedido,
+                            
+                            producto=producto.producto,
+                            
+                            cantidad=producto.cantidad)
+                        producto.producto.disminuir(producto.cantidad)
+                        producto.eliminar()
+                        
+                    
+                    messages.success(request, 'Compra exitosa, espere a que tomen su pedido')
+                    return redirect('homeCarrito')
+                    
+                except Exception as e:
+                    print('entre al except')
+                    # Si ocurre un error, imprime o maneja el mensaje
+                    print(f"Error al procesar el pedido: {e}")
+                    # Opcionalmente, podrías realizar un rollback o limpiar objetos creados
+                    # pedido.delete()
+                    messages.error(request, 'No se pudo guardar su pedido, intente de nuevo.')
+                    return redirect('homeCarrito')
+                    # Si es necesario, elimina el pedido creado
+                    
+                    
+            # datos={
+                
+            # }
+            # Pedido_Producto.objects.create(**datos)
+    
+                
+                
+
+        
+      
             
-        
+def misPedidos(request):
+    pedidos = Pedido.objects.prefetch_related('productos').filter(user=request.user).filter(estatus='E')
+    return render (request, 'historial/misPedidos.html', context={'pedidos':pedidos})
+           
         

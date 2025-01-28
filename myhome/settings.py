@@ -15,6 +15,8 @@ from django.contrib.messages import constants as messages
 
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Usa la base de datos para sesiones
+
 
 # Opcional: personaliza las clases de mensaje
 MESSAGE_TAGS = {

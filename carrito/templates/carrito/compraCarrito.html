@@ -1,19 +1,44 @@
 <h1>agregue los detalles del envio</h1>
+{% if messages %}
+    <div>
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
 <p>{{error}}</p>
 
 
 
 <div class="form-container">
         
+{% if productos and form%}
+<h3>Productos seleccionados</h3>
+    {% for producto in productos %}
+    <p>Producto: {{ producto.nombre }}</p>
+    <p>cantidad: {{ producto.cantidad }}</p>
+    {% endfor %}
+    <h4>subtotal: {{subtotal}}</h4>
 
-    <p>Producto:{{producto.producto.nombre}}</p>
-    <p>Unidad:{{producto.unidad}}</p>
-        
-    </form>
     <form method="POST" >
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="btn btn-primary mt-3">Guardar</button>
         
     </form>
+{% elif producto and form %}
+    <p>Producto:{{producto.producto.nombre}}</p>
+    <p>Unidad:{{producto.unidad}}</p>
+  
+    
+    <form method="POST" >
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+        
+    </form>
+
+{% endif %} 
 </div>

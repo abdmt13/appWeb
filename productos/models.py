@@ -21,7 +21,7 @@ class Producto(models.Model):
         return f"Pedido {self.nombre} - {self.precio}"
 
     def disminuir(self, cantidad=1):
-        if self.existencia > 0:
+        if self.existencia - cantidad>= 0:
             self.existencia -= cantidad  # Asigna el resultado de la resta
             self.save()
         else:

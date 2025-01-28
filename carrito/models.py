@@ -16,6 +16,7 @@ class ProductoCarrito(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
     cantidad = models.PositiveIntegerField(default=1)
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    seleccionado = models.BooleanField(default=False)
     
     
     def __str__(self):

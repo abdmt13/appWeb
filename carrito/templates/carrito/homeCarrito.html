@@ -4,23 +4,80 @@
 
 <h1>Bienvenido</h1>
 <p>{{mensaje}}</p>
-<button>Mis pedidos</button>
+<a href="{% url 'misPedidos' %}">
+    <button>Mis pedidos</button>
+</a>
+
 {% if not productos %}
 <h4>aun no tiene agregado ningun producto</h4>
 {% else %}
-
-    {% for producto in productos %}
-
-    <p>{{producto.producto.nombre}}</p>
-    <p>{{producto.cantidad}}</p>
-    <p>precio unitario:{{producto.precio_unitario}}</p>
-    <p>subtotal:$ {{producto.subtotal}}</p>
-    <a href="{% url 'restaCarrito' producto.id %}">Resta</a>
-    <a href="{% url 'sumaCarrito' producto.id %}">suma</a>
-    <a href="{% url 'eliminar_del_carrito' producto.id %}">Eliminar</a>
-    <a href="{% url 'comprar' producto.id 'fromhomecarrito' %}">Comprar</a>
-    {% endfor %}
+<form method="post" action="{% url 'comprar_listacarrito' %}">
+    {% csrf_token %}
+    <table>
+        <thead>
+            <tr>
+                <th>Seleccionar</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio unitario</th>
+                <th>subtotal</th>
+                <th>Acciones</th>
+                <th>
+                    <button type="submit" name="accion" value="comprar_todo">Comprar todo</button>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+            <tr>
+                <td><input type="checkbox" name="seleccionados" value="{{ producto.id }}" {% if producto.seleccionado %} checked {% endif %}></td>
+                <td>{{producto.producto.nombre}}</td>
+                <td>{{producto.cantidad}}</td>
+                <td>${{producto.precio_unitario}}</td>
+                <td>${{producto.subtotal}}</td>
+                <td>
+                    <a href="{% url 'restaCarrito' producto.id %}">Resta</a>
+                    <a href="{% url 'sumaCarrito' producto.id %}">suma</a>
+                    <a href="{% url 'eliminar_del_carrito' producto.id %}">Eliminar</a>
+                    <a href="{% url 'comprar' producto.id 'fromhomecarrito' %}">Comprar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    
+    
+ 
+    
+    
+</form>
 
 {% endif %} 
 
 {% endblock %}
+<form method="post">
+    {% csrf_token %}
+    <table>
+        <thead>
+            <tr>
+                <th>Seleccionar</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in productos %}
+            <tr>
+                <td>
+                    <input type="checkbox" name="seleccionados" value="{{ item.id }}" {% if item.seleccionado %} checked {% endif %}>
+                </td>
+                <td>{{ item.producto.nombre }}</td>
+                <td>{{ item.cantidad }}</td>
+                <td>{{ item.producto.precio }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button type="submit" name="comprar">Comprar seleccionados</button>
+    <button type="submit" name="comprar_todo">Comprar todo</button>
+</form>

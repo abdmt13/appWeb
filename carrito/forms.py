@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Pedido, Pedido_Producto, Domicilio, Producto
+from .models import Pedido, Pedido_Producto, Domicilio, Producto, ProductoCarrito
 
 class PedidoForm(ModelForm):
     class Meta:      
@@ -22,3 +22,8 @@ class PedidoProductoForm(ModelForm):
         super().__init__(*args, **kwargs)
         # Mostrar todos los productos disponibles
         self.fields['producto'].queryset = Producto.objects.all()
+
+class Checkbox(ModelForm):
+    class Meta:
+        model=ProductoCarrito
+        fields=['seleccionado']
