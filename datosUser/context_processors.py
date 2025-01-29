@@ -1,4 +1,5 @@
 from django.contrib.auth.models import Group
+from tortilleria.models import Informacion_Tortilleria
 
 def permisos_globales(request):
     if request.user.is_authenticated:  # Solo para usuarios autenticados
@@ -9,3 +10,12 @@ def permisos_globales(request):
             'super_user': super_user,
         }
     return {}
+
+
+
+def informacion_tortilleria(request):
+    informacion=Informacion_Tortilleria.objects.last()
+    if informacion:
+        return {'informacion': informacion}
+    
+    

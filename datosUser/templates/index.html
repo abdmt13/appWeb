@@ -34,7 +34,15 @@
 
         </div>
     </div>
-    <div></div>
+    <div>
+        <h2> {{ informacion.nombre }}</h2>
+        <p>Direccion: {{ informacion.direccion }}</p>
+        <p>Hora Inicio: {{ informacion.horaInicio }}</p>
+        <p>Hora Final: {{ informacion.horaFinal }}</p>
+        {% if informacion.imagen %}
+            <img src="{{ informacion.imagen.url }}" alt="Imagen de {{ informacion.nombre }}" width="200">
+        {% endif %}
+    </div>
     
 </body>
 </html>

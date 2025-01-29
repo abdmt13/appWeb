@@ -84,6 +84,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'datosUser.context_processors.permisos_globales',
+                'datosUser.context_processors.informacion_tortilleria',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
