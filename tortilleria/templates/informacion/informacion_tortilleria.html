@@ -1,0 +1,43 @@
+<button>empleados</button>
+<button>avisos</button>
+<button>home</button>
+<button>regalos</button>
+
+{% if messages %}
+    <div>
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+<p>{{error}}</p>
+
+<h1>Guarde la informacion de la tortilleria</h1>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Subir informacion</button>
+</form>
+
+
+
+{% if informacion %}
+<h1>Informacion Guardada</h1>
+
+<div>
+    <h2>{{ informacion.nombre }}</h2>
+    <p>{{ informacion.direccion }}</p>
+    <p>Hora Inicio: {{ informacion.horaInicio }}</p>
+    <p>Hora Final: {{ informacion.horaFinal }}</p>
+    {% if informacion.imagen %}
+        <img src="{{ informacion.imagen.url }}" alt="Imagen de {{ informacion.nombre }}" width="200">
+    {% endif %}
+</div>
+
+
+
+
+
+{% endif %}

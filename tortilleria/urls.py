@@ -6,4 +6,9 @@ from . import views
 urlpatterns = [
     path("",views.homeTortilleria, name='homeTortilleria'),
     
-]
+    path('informacion_totilleria', views.informacionTortilleria, name='informacionTortilleria'),
+    
+    
+    
+    
+    ]

@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("", include("datosUser.urls")),
@@ -24,3 +26,5 @@ urlpatterns = [
     path("carrito/", include("carrito.urls")),
     path('tortilleria/', include("tortilleria.urls")),
 ]
+if settings.DEBUG:  # Solo para desarrollo
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
