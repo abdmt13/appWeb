@@ -116,10 +116,12 @@ def gestionarAccion(request, producto_id):
             #     detalle.cantidad += 1
             detalle.subtotal = detalle.cantidad * detalle.precio_unitario
             detalle.save()
-
-            messages.success(request, f'{productoReal.nombre} se ha agregado al carrito.')
-            return redirect('homeProductos')
-        
+            if request.user.groups.filter(name='administrador').exists():
+                messages.success(request, f'{productoReal.nombre} se ha agregado al carrito.')
+                return redirect('homeProductos')
+            else:
+                messages.success(request, f'{productoReal.nombre} se ha agregado al carrito.')
+                return redirect('menu')
         # aqui se compra desde producto homeProducto
         elif accion=='comprar':
             
@@ -168,8 +170,12 @@ def gestionarAccion(request, producto_id):
                     if productoReal.tipo=='m':
                         pedido.save()
                         pedidoProducto.save()
-                        messages.success(request, 'Compra exitosa, espere a que tomen su pedido')
-                        return redirect('homeProductos')
+                        if request.user.groups.filter(name='administrador').exists():
+                            messages.success(request, f'{productoReal.nombre} se ha agregado al carrito.')
+                            return redirect('homeProductos')
+                        else:
+                            messages.success(request, f'{productoReal.nombre} se ha agregado al carrito.')
+                            return redirect('menu')
                         
                         
                     else:
@@ -177,11 +183,19 @@ def gestionarAccion(request, producto_id):
                             productoReal.disminuir(cantidad_value)
                             pedido.save()
                             pedidoProducto.save()
-                            messages.success(request, 'Compra exitosa, espere a que tomen su pedido')
-                            return redirect('homeProductos')
+                            if request.user.groups.filter(name='administrador').exists():
+                                messages.success(request, f'{productoReal.nombre} se ha agregado al carrito.')
+                                return redirect('homeProductos')
+                            else:
+                                messages.success(request, f'{productoReal.nombre} se ha agregado al carrito.')
+                                return redirect('menu')
                         else:
-                            messages.error(request, 'La cantidad seleccionada excede la existencia.')
-                            return redirect('homeProductos')  # Ajusta según el nombre de tu URL para ProductosListaViews
+                            if request.user.groups.filter(name='administrador').exists():
+                                messages.error(request, f'{productoReal.nombre} se ha agregado al carrito.')
+                                return redirect('homeProductos')
+                            else:
+                                messages.error(request, f'{productoReal.nombre} se ha agregado al carrito.')
+                                return redirect('menu')
                            
                             
             # 

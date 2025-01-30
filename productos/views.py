@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 def in_group_administradores(user):
     
-    return user.groups.filter(name='admi').exists() or user.is_superuser
+    return user.groups.filter(name='administrador').exists() or user.is_superuser
 
 
 
@@ -28,17 +28,7 @@ class ProductosListaViews(LoginRequiredMixin, ListView):
         
         return context
     
-    # def get_queryset(self):
-    #     query = self.request.GET.get('q')
-    #     if query:
-    #         return Producto.objects.filter(nombre__icontains=query)
-    #     return Producto.objects.all()
-# Create your views here.
-# def homeProductos(request):
-#     form=BuscarProductoForm
-#     productos=Producto.objects.all()
-    
-#     return render(request, 'vistasProducto/verProducto.html', context={'productos':productos, 'form':form} )
+   
 
 @user_passes_test(in_group_administradores)
 @login_required

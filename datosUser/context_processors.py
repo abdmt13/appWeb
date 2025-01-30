@@ -3,7 +3,7 @@ from tortilleria.models import Informacion_Tortilleria
 
 def permisos_globales(request):
     if request.user.is_authenticated:  # Solo para usuarios autenticados
-        permiso = request.user.groups.filter(name='admi').exists()
+        permiso = request.user.groups.filter(name='administrador').exists()
         super_user = request.user.is_superuser
         return {
             'permiso': permiso,
