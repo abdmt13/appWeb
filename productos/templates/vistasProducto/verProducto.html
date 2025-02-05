@@ -37,7 +37,7 @@
         {% for producto in productos %}
         <div class="col-md-4 mb-4">
             <div class="card" style="width: 100%;">
-                <img src="..." class="card-img-top" alt="...">
+                <img src="{{ producto.imagen.url }}" alt="Imagen de {{ producto.nombre }}" width="200">
                 <div class="card-body">
                     <h5 class="card-title">{{ producto.nombre }}</h5>
                     <p class="card-text">{{ producto.descripcion }}</p>

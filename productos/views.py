@@ -39,12 +39,14 @@ def agregarProducto(request):
     else:
         
         try:
-            form=productoForm(request.POST)
+            form=productoForm(request.POST, request.FILES)
             if form.is_valid():
                 # print(form)
                 producto=form.save(commit=False)
-                
+                # producto.existencia=0
+               
                 producto.save()
+                print('guarda  el producto')
                 return redirect('homeProductos')
         except:
             return render(request, 'vistasProducto/crearProducto.html', context={'form':form, 'error':'Algo ah salido mal, intente de nuevo'})
@@ -62,7 +64,7 @@ def editarProducto(request, id):
         try:
             
             producto=Producto.objects.get(id=id)
-            form=productoForm(request.POST, instance=producto)
+            form=productoForm(request.POST, request.FILES, instance=producto)
             if form.is_valid():
                 form.save()
                 print(f"esto es lo que debe de guardar el form:{form}")

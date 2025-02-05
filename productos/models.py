@@ -16,6 +16,7 @@ class Producto(models.Model):
     # imagen_referencia=models.ImageField()
     codigo = models.CharField(max_length=20, unique=True, blank=True, null=True)  # Nuevo campo
     estado=models.BooleanField(help_text='disponibilidad')
+    imagen = models.ImageField(upload_to='productos/', default='productos/subir-imagen.png')  # Carpeta donde se almacenarán las imágenes
     
     def __str__(self):
         return f"Pedido {self.nombre} - {self.precio}"

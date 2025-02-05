@@ -62,7 +62,7 @@ class Pedido(models.Model):
     horario_entrega = models.DateTimeField(blank=True)
     tipo_pedido = models.CharField(max_length=1, choices=TIPOPEDIDO, default='D')
     precio_total = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
-    estatus=models.CharField(max_length=1, choices=ESTATUS, default='P')
+    estatus=models.CharField(max_length=1, choices=ESTATUS, default='E')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):

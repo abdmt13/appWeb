@@ -1,0 +1,31 @@
+<h1>Mis pedidos</h1>
+<h4>Solo los pedidos en espera se pueden cancelar</h4>
+
+{% if pedidopedidos %}
+
+{% for pedido in pedidopedidos %}
+<h2>Pedido #{{ pedido.id }} - {{ pedido.get_tipo_pedido_display }}</h2>
+
+
+{% for item in pedido.productos.all %}
+<p>Producto: {{item.producto.nombre}}</p>
+<p>Cantidad: {{item.cantidad}}</p>
+
+{% endfor %}
+<p>Estado: {{ pedido.get_estatus_display }}</p>
+<p>Precio Total: ${{ pedido.precio_total }}</p>
+
+<a href="{% url 'cancelar_pedido' pedido.id %}">
+    <button type="button" class="btn btn-primary mt-3" name="cancelar">cancelar pedido</button>
+</a>
+
+
+
+
+{% endfor %}
+
+
+{% else %}
+<h2>Aun no tiene pedidos</h2>
+
+{% endif %}

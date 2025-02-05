@@ -331,19 +331,24 @@ def comprarfromhome(request):
 #este es la logica para comprar todo el carrito            
 def comprar_listacarrito(request):
     if request.method=='POST':
+        
         accion = request.POST.get("accion")
           
         if accion=='comprar_todo':
+            
             try:
                 seleccionados = request.POST.getlist('seleccionados') 
+                
                 request.session['seleccionados'] = seleccionados
-                print(f'Guardado en la sesión: {request.session["seleccionado"]}') 
+                print(f'Guardado en la sesión: {request.session["seleccionados"]}') 
+                
                 request.session.save()
+                print(f'dentro de accion linea 340{seleccionados}')
                 
                 carrito=Carrito.objects.get(user=request.user) 
                 
                 
-                print(f'{seleccionados}') 
+               
                 subtotal=0.0
                 carritoProductos=[]
                 for producto_id in seleccionados:
@@ -374,7 +379,7 @@ def comprar_listacarrito(request):
                 seleccionados=[]
                 # carrito=None
                 # carritoProductos=None
-            print('dentro de accion')
+            
            
 
            
@@ -447,8 +452,8 @@ def comprar_listacarrito(request):
         
       
             
-def misPedidos(request):
-    pedidos = Pedido.objects.prefetch_related('productos').filter(user=request.user).filter(estatus='E')
-    return render (request, 'historial/misPedidos.html', context={'pedidos':pedidos})
+def historial(request):
+    pedidos = Pedido.objects.prefetch_related('productos').filter(user=request.user)
+    return render (request, 'historial/historial.html', context={'pedidos':pedidos})
            
         

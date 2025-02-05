@@ -7,9 +7,8 @@ from django.contrib.auth.models import User
 class productoForm(ModelForm):
     class Meta:      
         model=Producto
-        fields=['tipo', 'nombre', 'descripcion', 'precio','existencia','estado'] 
-        if 'tipo'=='m':
-            exclude=['existencia']
+        fields=['tipo', 'nombre', 'descripcion', 'precio','existencia','estado','imagen'] 
+       
         
         
 class BuscarProductoForm(forms.Form):

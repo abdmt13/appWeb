@@ -6,7 +6,7 @@ class Informacion_Tortilleria(models.Model):
     direccion = models.TextField()
     horaInicio = models.TimeField()  # Hora de inicio
     horaFinal = models.TimeField()  # Hora de fin
-    imagen = models.ImageField(upload_to='productos/')  # Carpeta donde se almacenarán las imágenes
+    imagen = models.ImageField(upload_to='informacion/')  # Carpeta donde se almacenarán las imágenes
 
     def __str__(self):
         return self.nombre

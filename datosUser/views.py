@@ -12,6 +12,7 @@ from django.db import IntegrityError
 from .forms import datosPersonalesForm, domicilioForm
 from carrito.forms import PedidoForm, PedidoProductoForm
 from .models import Domicilio
+from carrito.models import Pedido, Pedido_Producto
 
 
 
@@ -157,3 +158,20 @@ def editarDomicilio(request, id):
         except:
             form = domicilioForm(user=request.user)
             return render(request,'vistaApp/domicilios/nuevoDomicilio.html', context={'form':form, 'error':'algo salio mal'} ) 
+        
+        
+        
+def mis_pedidos(request):
+    pedido=Pedido.objects.filter(user=request.user).filter(estatus='E')
+    # pedidopedidos = Pedido.objects.prefetch_related('productos').filter(user=request.user).filter(estatus='E')
+    # print(pedidopedidos)
+    return render(request, 'vistaApp/datosPersonales/mis_pedidos.html', context={'pedidopedidos':pedido})
+
+def cancelar_pedido(request, pedido_id):
+    pedido=Pedido.objects.get(id=pedido_id)
+    print(f'esto es el pedido: {pedido}')
+    pedido.estatus='X'
+    pedido.save()
+    return redirect(mis_pedidos)
+    
+    

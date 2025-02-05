@@ -14,5 +14,7 @@ urlpatterns = [
     path("editarDomicilio/<int:id>/", views.editarDomicilio, name='editarDomicilio'),
     
     
-    path("registroDatosPersonales/", views.registroDatosPersonales, name="registroDatosPersonales")
+    path("registroDatosPersonales/", views.registroDatosPersonales, name="registroDatosPersonales"),
+    path("mis_pedidos/", views.mis_pedidos, name='mis_pedidos'),
+    path('cancelar_pedido/<int:pedido_id>', views.cancelar_pedido, name='cancelar_pedido')
 ]
