@@ -88,7 +88,8 @@ def gestionarAccion(request, producto_id):
 
         
        
-        form = PedidoForm(user=request.user)
+        form = PedidoForm(user=request.user, request=request)
+
         # cantidad.cleaned_data['cantidad']
         # print(f'esto trae la cantidad {cantidad}')
             

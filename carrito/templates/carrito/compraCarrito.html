@@ -2,13 +2,22 @@
 {% if messages %}
     <div>
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-            </div>
-        {% endfor %}
+    {% if 'warning' in message.tags %}
+        <div class="alert alert-warning">
+            {{ message }}
+            <a href="{% url 'nuevoDomicilio' %}" class="btn btn-primary">Registrar Domicilio</a>
+        </div>
+    {% else %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+    {% endif %}
+{% endfor %}
+
     </div>
 {% endif %}
 <p>{{error}}</p>
+
 
 
 

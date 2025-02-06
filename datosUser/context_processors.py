@@ -17,5 +17,14 @@ def informacion_tortilleria(request):
     informacion=Informacion_Tortilleria.objects.last()
     if informacion:
         return {'informacion': informacion}
+    else:
+        informacion = {
+            "nombre": "Tortillería no disponible",
+            "direccion": "No registrada",
+            "horaInicio": "00:00",
+            "horaFinal": "00:00",
+            "imagen": None
+        }
+        return{'informacion': informacion}
     
     

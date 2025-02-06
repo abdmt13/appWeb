@@ -34,6 +34,7 @@
 
         </div>
     </div>
+    {% if informacion %}
     <div>
         <h2> {{ informacion.nombre }}</h2>
         <p>Direccion: {{ informacion.direccion }}</p>
@@ -43,6 +44,10 @@
             <img src="{{ informacion.imagen.url }}" alt="Imagen de {{ informacion.nombre }}" width="200">
         {% endif %}
     </div>
+    {% else %}
+        <p>No hay información</p>
+    {% endif %}
+
     
 </body>
 </html>

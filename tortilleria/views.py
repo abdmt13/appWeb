@@ -3,8 +3,10 @@ from carrito.models import Pedido
 from .models import Informacion_Tortilleria
 from .forms import InformacionTortilleriaForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required
 def homeTortilleria(request):
     # Obtener pedidos y productos relacionados
     pedidos = Pedido.objects.prefetch_related('productos')
@@ -13,7 +15,7 @@ def homeTortilleria(request):
 
 
 
-
+@login_required
 def informacionTortilleria(request):
     if request.method == 'POST':
         info=Informacion_Tortilleria.objects.all().count()
