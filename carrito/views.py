@@ -291,7 +291,17 @@ def comprarfromhome(request):
         pedidoproductoform=PedidoProductoForm(request.POST)
         
         try:
+            
+            
             if pedidoform.is_valid() and pedidoproductoform.is_valid():
+                print('pedido validado')
+                domicilio = pedidoform.cleaned_data.get('domicilio')
+                if domicilio is None:
+                    messages.error(request, 'primero cree un domicilio.')
+                    return redirect('home')
+                
+            
+                print('brinca el if')            
                 productoReal=pedidoproductoform.cleaned_data['producto']
                 cantidad=pedidoproductoform.cleaned_data['cantidad']
                 precio_total=cantidad * productoReal.precio

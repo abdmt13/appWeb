@@ -27,34 +27,34 @@ class domicilioForm(ModelForm):
         
                 
         model=Domicilio
-        fields=['nombreCompleto', 'calle', 'entreCalle', 'referencia','telefono','municipio']
+        fields=['nombreCompleto', 'calle', 'entreCalle', 'referencia','telefono', 'municipio']
         
         widgets = {
             'nombreCompleto': forms.TextInput(attrs={
                 'class': 'form-control',  # También puedes agregar clases CSS
             }),
             'calle': forms.NumberInput(attrs={
-                'placeholder': 'Ej: 16',
+                'placeholder': 'Ejemplo: 16',
                 'class': 'form-control',
             }),
             'entreCalle': forms.TextInput(attrs={
-                'placeholder': 'Ej: 12 y 14',
+                'placeholder': 'Ejemplo: 12 y 14',
                 'class': 'form-control',
             }),
             'referencia': forms.Textarea(attrs={
-                'placeholder': 'Descripción de la ubicación: casa color morada, hay un arbolito afuera',
+                'placeholder': 'Ejemplo: Descripción de la ubicación: casa color morada, hay un arbolito afuera',
                 'class': 'form-control',
                 'rows': 3,  # Controla el tamaño del área de texto
             }),
             'telefono': forms.NumberInput(attrs={
-                'placeholder': '9993954386',
+                'placeholder': 'ejemplo: 9993954386',
                 'class': 'form-control',
                   # Controla el tamaño del área de texto
             }),
-            'municipio': forms.TextInput(attrs={
-                'placeholder': 'Ekmul',
+            'municipio': forms.Select(attrs={
                 'class': 'form-control',
-                 # Controla el tamaño del área de texto
+                'disabled': True,  # Deshabilita el campo
+                # 'placeholder': 'Por el momento es el unicp municipio disponible',
             }),
         }
         
