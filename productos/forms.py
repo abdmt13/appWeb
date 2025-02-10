@@ -7,7 +7,11 @@ from django.contrib.auth.models import User
 class productoForm(ModelForm):
     class Meta:      
         model=Producto
-        fields=['tipo', 'nombre', 'descripcion', 'precio','existencia','estado','imagen'] 
+        fields=['codigo', 'tipo', 'nombre', 'descripcion', 'precio','existencia','estado','imagen'] 
+
+        widgets={'codigo': forms.TextInput(
+            attrs={'class': 'form-control',
+                'placeholder': 'ej: 01|producto01|nombre_del_producto'}),}
        
         
         

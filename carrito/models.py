@@ -51,6 +51,8 @@ class Pedido(models.Model):
         ('E', 'Express'),
         ('T', 'Tienda'),
     ]
+    # arrito\migrations\0007_alter_pedido_tipo_pedido.py
+    # datosUser\migrations\0005_alter_domicilio_municipio.py
     ESTATUS=[
         ('X','Cancelado'),
         ('E', 'Espera'),
@@ -60,7 +62,7 @@ class Pedido(models.Model):
     
     domicilio = models.ForeignKey(Domicilio, on_delete=models.CASCADE)
     horario_entrega = models.DateTimeField(blank=True)
-    tipo_pedido = models.CharField(max_length=1, choices=TIPOPEDIDO, default='D')
+    tipo_pedido = models.CharField(max_length=100, choices=TIPOPEDIDO, default='D', help_text='Disponible solo Domicilio')
     precio_total = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
     estatus=models.CharField(max_length=1, choices=ESTATUS, default='E')
     user = models.ForeignKey(User, on_delete=models.CASCADE)

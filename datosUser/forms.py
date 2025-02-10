@@ -42,7 +42,7 @@ class domicilioForm(ModelForm):
                 'class': 'form-control',
             }),
             'referencia': forms.Textarea(attrs={
-                'placeholder': 'Ejemplo: Descripción de la ubicación: casa color morada, hay un arbolito afuera',
+                'placeholder': 'Ejemplo:casa color morada, hay un arbolito afuera',
                 'class': 'form-control',
                 'rows': 3,  # Controla el tamaño del área de texto
             }),
@@ -53,7 +53,7 @@ class domicilioForm(ModelForm):
             }),
             'municipio': forms.Select(attrs={
                 'class': 'form-control',
-                'disabled': True,  # Deshabilita el campo
+                'readonly': True,  # Deshabilita el campo
                 # 'placeholder': 'Por el momento es el unicp municipio disponible',
             }),
         }

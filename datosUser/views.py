@@ -118,25 +118,25 @@ def nuevoDomicilio(request):
     print(f'este es el numero de domicilio {numeroDomicilio}')
     if numeroDomicilio==3:
         return render(request,'vistaApp/domicilios/nuevoDomicilio.html', context={'mensaje':True} ) 
-        
-    
-    
-    
-    if request.method=="GET":
-        form = domicilioForm(user=request.user)
-        return render(request,'vistaApp/domicilios/nuevoDomicilio.html', context={'form':form, 'numeroDomicilio':numeroDomicilio} )  
     else:
-        try:
-            form=domicilioForm(request.POST)
-            print(f'esto trae el {form}')
-            if form.is_valid():
-                domicilio = form.save(commit=False)
-                domicilio.user = request.user
-                domicilio.save()
-                return redirect(homePerfil)
-        except:
+        if request.method=="GET":
             form = domicilioForm(user=request.user)
-            return render(request,'vistaApp/domicilios/nuevoDomicilio.html', context={'form':form} ) 
+            return render(request,'vistaApp/domicilios/nuevoDomicilio.html', context={'form':form, 'numeroDomicilio':numeroDomicilio} )  
+        else:
+            print(f'esto trae el form{domicilioForm(request.POST)}')
+            try:
+                form=domicilioForm(request.POST)
+                # print(f'esto trae el {form}')
+                if form.is_valid():
+                    domicilio = form.save(commit=False)
+                    domicilio.municipio='E'
+                    domicilio.user = request.user
+                    
+                    domicilio.save()
+                    return redirect(homePerfil)
+            except:
+                form = domicilioForm(user=request.user)
+                return render(request,'vistaApp/domicilios/nuevoDomicilio.html', context={'form':form} ) 
 
 @login_required           
 def editarDomicilio(request, id):

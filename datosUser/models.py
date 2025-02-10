@@ -15,8 +15,8 @@ class Domicilio(models.Model):
     calle = models.CharField(max_length=100)
     entreCalle = models.CharField(max_length=50)
     referencia = models.TextField()
-    telefono = models.CharField(max_length=15)
-    municipio = models.CharField(max_length=1, choices=MUNICIPIO, default='E')
+    telefono = models.CharField(max_length=15)  
+    municipio = models.CharField(max_length=1, choices=MUNICIPIO, default='E', help_text='Disponible solo Ekmul')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
