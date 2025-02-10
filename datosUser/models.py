@@ -20,5 +20,5 @@ class Domicilio(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.nombreCompleto} {self.calle} {self.municipio}"
+        return f"C:{self.calle} entre {self.entreCalle} {self.telefono}"
 # esto es para poner como uno fijo siempre   y principal

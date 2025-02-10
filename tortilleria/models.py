@@ -9,4 +9,7 @@ class Informacion_Tortilleria(models.Model):
     imagen = models.ImageField(upload_to='informacion/')  # Carpeta donde se almacenarán las imágenes
 
     def __str__(self):
+        return f"{self.nombre} {self.direccion}"
+
+    def __str__(self):
         return self.nombre
