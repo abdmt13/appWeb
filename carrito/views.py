@@ -416,7 +416,7 @@ def comprar_listacarrito(request):
                 pedido=form.save(commit=False)
                 pedido.user=request.user
                 pedido.horario_entrega=now()
-                pedido.estatus='p'
+                pedido.estatus='E'
                 pedido.precio_total=subtotal
                 # pedido.save()
                 print(f'esto trae el pedido preguardado{pedido}')

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Asignar Usuarios a Grupos</title>
+</head>
+<body>
+    <h2>Asignar Usuario a un Grupo</h2>
+    
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Asignar</button>
+    </form>
+
+    <h3>Historial Empleados</h3>
+    <ul>
+        {% if empleados %}
+        {% for empleado in empleados %}
+        <li>{{ empleado.usuario.first_name }} {{ empleado.usuario.last_name }} {{empleado.grupo}}
+
+        </li>
+        <a href="">
+            <button type="button" class="btn btn-primary mt-3" name="registroUser">Eliminar Empleado</button>
+            </a>
+    {% endfor %}
+    {% else %}
+        <li>No hay empleados</li>
+    {% endif %}
+    </ul>
+
+    
+</body>
+</html>

@@ -37,6 +37,13 @@
               <li><a href="{% url 'homeTortilleria' %}">
                 <button type="button" class="btn btn-primary mt-3" name="menu">Tortilleria</button>
                 </a></li>
+            {% elif permisoRepartidor %}
+            <li><a href="{% url 'menu' %}">
+              <button type="button" class="btn btn-primary mt-3" name="menu">menu</button>
+              </a></li>
+              <li><a href="{% url 'homeTortilleria' %}">
+                <button type="button" class="btn btn-primary mt-3" name="menu">Tortilleria</button>
+                </a></li>
             {% else %}
             <li><a href="{% url 'menu' %}">
               <button type="button" class="btn btn-primary mt-3" name="menu">menu</button>

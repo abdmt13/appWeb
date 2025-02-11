@@ -1,20 +1,52 @@
 from django.shortcuts import render, redirect
 from carrito.models import Pedido
-from .models import Informacion_Tortilleria
-from .forms import InformacionTortilleriaForm
+from .models import Informacion_Tortilleria, HistorialEmpleado
+from django.contrib.auth.models import Group, User
+from .forms import InformacionTortilleriaForm, AsignarEmpleadoForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 @login_required
 def homeTortilleria(request):
+    if request.method =='GET':
     # Obtener pedidos y productos relacionados
-    pedidos = Pedido.objects.prefetch_related('productos')
-    return render (request, 'home_tortilleria.html', context={'pedidos': pedidos})
+        pedidos = Pedido.objects.prefetch_related('productos').filter(estatus='E')
+        return render (request, 'home_tortilleria.html', context={'pedidos': pedidos})
+    # else:
+
+@login_required
+def seleccionarAccion(request): 
+    if request.method == 'POST':
+        try:
+            id_pedido = request.POST.getlist('seleccionados')
+            noPedidos = len(id_pedido)
+            if noPedidos == 0:
+                messages.error(request, 'No se seleccionó ningún pedido')
+                return redirect('homeTortilleria')
+            else:
+                request.session['pedidosRepartidor'] = id_pedido
+                request.session['pedidosLista'] = id_pedido
+                print(f'Guardado en la sesión repartidor: {request.session["pedidosRepartidor"]} guardado en la sesión lista: {request.session["pedidosLista"]}') 
+                
+                
+                request.session.save()
+                
+        except: 
+            messages.error(request, 'Error al obtener el pedido')
+            return redirect('homeTortilleria')
+        accion = request.POST.get('accion')
+        if accion == 'repartidor':
+
+            print('Enviando al Repartidor')
+            # id_pedido = request.POST.get('id_pedido')
+            # pedido = Pedido.objects.get(id=id_pedido)
+            # pedido.estatus = 'E'
+        else:
+            print('Acción lista')
 
 
-
-
+ 
 @login_required
 def informacionTortilleria(request):
     if request.method == 'POST':
@@ -51,3 +83,25 @@ def informacionTortilleria(request):
 
         return render(request, 'informacion/informacion_tortilleria.html', {'form': form, 'informacion': informacion})
 
+def guardarEmpleado(request):
+    if request.method == 'POST':
+        form = AsignarEmpleadoForm(request.POST)
+        if form.is_valid():
+            grupo = form.cleaned_data['grupo']
+            usuario = form.cleaned_data['usuario']
+            usuario.groups.add(grupo)  # Asigna el usuario al grupo
+            HistorialEmpleado.objects.create(usuario=usuario, grupo=grupo)
+            messages.success(request, f'Usuario {usuario.username} agregado a {grupo.name}')
+            return redirect('guardarEmpleado')  # Recarga la página después de guardar
+    else:
+        form = AsignarEmpleadoForm()
+        empleados = HistorialEmpleado.objects.all()
+
+        # grupos = Group.objects.all()
+        # usuarios = User.objects.all()
+        
+        return render(request, 'informacion/empleados.html', context={
+            'form': form,
+            'empleados': empleados,
+        })
+    # return render(request, 'empleados.html')

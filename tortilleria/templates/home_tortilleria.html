@@ -2,14 +2,13 @@
 
 {% block content %}
 
+
 <h1>Bienvenido a la tortilleria </h1>
 <a href="{% url 'informacionTortilleria' %}">
   <button>Informacion Tortilleria</button>
 </a>
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css"
->
+
+
 
 <div class="columns is-mobile">
     <div
@@ -27,18 +26,50 @@
     </div>
     <div class="column">
         <Code>Pedidos</Code>
-        {% for pedido in pedidos %}
-    <p>Pedido: {{ pedido.id }}</p>
-    <ul>
-        {{ pedido.domicilio}}
-        {% for producto in pedido.productos.all %}
-            <li>Producto: {{ producto.producto.nombre }} (Cantidad: {{ producto.cantidad }})</li>
-        {% endfor %}
-    </ul>
-{% endfor %}
+        <div>
+          <form method="post" action="{% url 'seleccionarAccion' %}">
+            {% csrf_token %}
+            <table>
+                <thead>
+                    <tr>
+                      <th>Seleccionar</th>
+                      <th>Usuario</th>
+                      <th>Producto</th>
+                      <th>Cantidad</th>
+                      <th>Precio</th>
+                      <th>Domicilio</th>
+                      <th>Acciones
+                        <button type="submit" name="accion" value="repartidor">Enviar a repartidor</button>
+                        <button type="submit" name="accion" value="lista">Añadir a Lista</button>
+                      </th>
+                    </tr>
+                </thead>
+                <tbody>
+                  {% for pedido in pedidos %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="seleccionados" value="{{ pedido.id }}" {% if pedido.seleccionado %} checked {% endif %}>
+                        </td>
+                        <td>{{ pedido.user }}</td>
+                        {% for item in pedido.productos.all %}
+                        <td>{{ item.producto.nombre }}</td>
+                        <td>{{item.cantidad}}</td>
+                        {% endfor %}
+        
+                        <td>{{ pedido.precio_total }}</td>
+                        <td>{{ pedido.domicilio }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+          </form>
+        </div>
 
     </div>
     
   </div>
+
+
 
   {% endblock %}

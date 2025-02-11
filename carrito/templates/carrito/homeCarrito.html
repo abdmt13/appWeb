@@ -54,30 +54,3 @@
 {% endif %} 
 
 {% endblock %}
-<form method="post">
-    {% csrf_token %}
-    <table>
-        <thead>
-            <tr>
-                <th>Seleccionar</th>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in productos %}
-            <tr>
-                <td>
-                    <input type="checkbox" name="seleccionados" value="{{ item.id }}" {% if item.seleccionado %} checked {% endif %}>
-                </td>
-                <td>{{ item.producto.nombre }}</td>
-                <td>{{ item.cantidad }}</td>
-                <td>{{ item.producto.precio }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <button type="submit" name="comprar">Comprar seleccionados</button>
-    <button type="submit" name="comprar_todo">Comprar todo</button>
-</form>
