@@ -23,6 +23,6 @@ class HistorialEmpleado(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     grupo = models.ForeignKey(Group, on_delete=models.CASCADE)
     fecha_asignacion = models.DateTimeField(auto_now_add=True)
-
+    estatus = models.BooleanField(default=True)
     def __str__(self):
         return f"{self.usuario.username} -> {self.grupo.name} ({self.fecha_asignacion})"
