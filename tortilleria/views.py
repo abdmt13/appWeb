@@ -104,4 +104,24 @@ def guardarEmpleado(request):
             'form': form,
             'empleados': empleados,
         })
+    
+def eliminarEmpleado(request, id_empleado):
+    try: 
+        empleado=HistorialEmpleado.objects.get(id=id_empleado)
+        print(f'este es el empleado {empleado} y este su grupo{empleado.grupo}')
+        
+        empleado.estatus=False
+        empleado.save()
+        empleado.usuario.groups.remove(empleado.grupo)  #  Eliminar el usuario del grupo
+        messages.success(request, f'Usuario {empleado.usuario.first_name} {empleado.usuario.last_name} eliminado del grupo {empleado.grupo}')
+        print('eliminando')
+
+        return redirect('guardarEmpleado')
+
+    
+    except:
+        print('no se pudo eliminar')
+        messages.error(request, f'No se pudo eliminar al usuario')
+            
+        return redirect('guardarEmpleado')  # Redirigir después de eliminar
     # return render(request, 'empleados.html')

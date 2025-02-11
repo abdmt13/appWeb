@@ -24,12 +24,17 @@
     <ul>
         {% if empleados %}
         {% for empleado in empleados %}
-        <li>{{ empleado.usuario.first_name }} {{ empleado.usuario.last_name }} {{empleado.grupo}}
+        <li>{{ empleado.usuario.first_name }} {{ empleado.usuario.last_name }} || pertenece: {{empleado.grupo}}
 
         </li>
-        <a href="">
+        <a href="{% url 'eliminarEmpleado' empleado.id %}">
             <button type="button" class="btn btn-primary mt-3" name="registroUser">Eliminar Empleado</button>
             </a>
+        {% if empleado.estatus %}
+        <p>Estatus: Activo</p>
+        {% else %}
+        <p>Estatus: Inactivo</p>
+        {% endif %}
     {% endfor %}
     {% else %}
         <li>No hay empleados</li>

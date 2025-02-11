@@ -15,6 +15,7 @@ urlpatterns = [
 
     # las url de abajo pertenecen a la seccion informacion de la tortileria
     path('guardarEmpleado/', views.guardarEmpleado, name='guardarEmpleado'),
+    path('eliminarEmpleado/<int:id_empleado>/', views.eliminarEmpleado, name='eliminarEmpleado')
     
     
     
