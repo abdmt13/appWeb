@@ -29,7 +29,12 @@
         </li>
         <a href="{% url 'eliminarEmpleado' empleado.id %}">
             <button type="button" class="btn btn-primary mt-3" name="registroUser">Eliminar Empleado</button>
-            </a>
+        </a>
+        <a href="{% url 'activarEmpleado' empleado.id %}">
+            <button type="button" class="btn btn-primary mt-3" name="registroUser">Activar Empleado</button>
+        </a>
+
+        
         {% if empleado.estatus %}
         <p>Estatus: Activo</p>
         {% else %}

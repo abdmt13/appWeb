@@ -1,5 +1,5 @@
 from django import forms
-from .models import Informacion_Tortilleria
+from .models import Informacion_Tortilleria, HistorialEmpleado
 from django.contrib.auth.models import Group, User
 # from datosUser.models import DatosUser
 
@@ -22,3 +22,6 @@ class AsignarEmpleadoForm(forms.Form):
         super(AsignarEmpleadoForm, self).__init__(*args, **kwargs)
         self.fields['usuario'].queryset = User.objects.all()
         self.fields['usuario'].label_from_instance = lambda obj: f"{obj.first_name} {obj.last_name} ({obj.username})"
+
+class SeleccionaRepartidorForm(forms.Form):
+    empleado=forms.ModelChoiceField(queryset=HistorialEmpleado.objects.all().filter(estatus=True), label="Empleado")

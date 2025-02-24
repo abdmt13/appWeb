@@ -91,3 +91,9 @@ class Pedido_Producto(models.Model):
 
     def __str__(self):
         return f"{self.cantidad} x {self.producto.nombre} (Pedido {self.pedido.id})"
+    
+
+class PedidoRepartidor(models.Model):
+    repartidor = models.ForeignKey(User, on_delete=models.CASCADE)
+    pedidos = models.JSONField(default=dict)  # Almacena los pedidos en formato JSON
+

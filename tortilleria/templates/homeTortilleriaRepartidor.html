@@ -1,0 +1,9 @@
+<h1>Hola repartidor</h1>
+
+{%for pedido in listaPedido%}
+    {% for item in pedido %}
+    <p>item.domicilio</p>
+    <p>item.horario_entrega</p>
+    <p>item.precio_total</p>
+    {% endfor %}
+{% endfor %}
