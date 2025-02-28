@@ -29,22 +29,11 @@ def homeTortilleriaAdmin(request):
     # else:
 
 def homeTortilleriaRepartidor(request):
+    pedidos=PedidoRepartidor.objects.all()
+    print(pedidos)
     
-    clave_sesion = f'pedidosRepartidor_{request.user.id}'
-    print (clave_sesion)
-    print("Claves en la sesión:", request.session.keys())
-
-
-    id_pedidos = request.session.get(clave_sesion, [])
-    print(id_pedidos)
-    listaPedido=[]
-    for id in id_pedidos:
-        pedido=Pedido.objects.get(id=id)
-        listaPedido.append(pedido)
-
-
-    print(f'Esto trae id_pedidos: {listaPedido}')
-    return render (request, 'homeTortilleriaRepartidor.html')
+   
+    return render (request, 'homeTortilleriaRepartidor.html', context={"pedidos":pedidos})
     
 
 @login_required
@@ -59,21 +48,18 @@ def seleccionarAccion(request):
                     messages.error(request, 'No se seleccionó ningún pedido')
                     return redirect('homeTortilleria')
                 else:
-                    request.session['pedidosRepartidor'] = id_pedido
-                    # request.session['pedidosLista'] = id_pedido
-                    print(f'Guardado en la sesión repartidor: {request.session["pedidosRepartidor"]}') 
-                    
-                    
-                    request.session.save()
+                    form=SeleccionaRepartidorForm()
+                    pedidos=request.POST.getlist('seleccionados', None)
+                    print(pedidos)
+                    return render(request, 'forms/seleccionaRepartidor.html', context={'form':form})
                     
             except: 
                 messages.error(request, 'Error al obtener el pedido')
                 return redirect('homeTortilleria')
 
-            form=SeleccionaRepartidorForm()
-            return render(request, 'forms/seleccionaRepartidor.html', context={'form':form})
+           
 
-            print('Enviando al Repartidor')
+           
           
         elif accion=='lista':
             print('Acción lista')
@@ -81,31 +67,29 @@ def seleccionarAccion(request):
             form=SeleccionaRepartidorForm(request.POST)
             if form.is_valid():
                 repartidor=form.cleaned_data['empleado']
-                pedidorepartidor=PedidoRepartidor()
-                pedidorepartidor.repartidor=repartidor.usuario
-                pedidos=request.session.get('pedidosRepartidor', None)
-                # clave_sesion = f'pedidosRepartidor_{repartidor.usuario.id}'
-                # print(clave_sesion)
-                # request.session[clave_sesion] = request.session.get('pedidosRepartidor', None)
-                # request.session.modified = True
-                # request.session.save()
-                diccionario={}
-                for idpedido in pedidos:
-                    pedido=Pedido.objects.get(id=idpedido)
-                    pedido.estatus='C'
-                    pedido.save()
-                    diccionario= {
-                        'id': pedido.id,
-                        'nombre': pedido.nombre,  # Asegúrate de que tiene un campo "nombre"
-                        'estatus': pedido.estatus,
-                        'precio': pedido.precio,  # Agrega más campos según tu modelo
-                    }
-                pedidorepartidor.pedidos=diccionario
-                pedidorepartidor.save()
+                
+                pedidos_ids = request.POST.getlist('seleccionados', None)
+                
+
+                for idpedido in pedidos_ids:
+                    try:
+                        pedidorepartidor=PedidoRepartidor()
+                        pedido = Pedido.objects.get(id=idpedido)
+                        pedido.estatus = 'C'
+                        pedido.save()
+
+                        pedidorepartidor.repartidor=repartidor.usuario
+                        pedidorepartidor.pedido=pedido
+                        pedidorepartidor.save() # Agrega el diccionario a la lista
+                    except Pedido.DoesNotExist:
+                        # Maneja el caso en que el pedido no existe (opcional)
+                        print(f"Advertencia: Pedido con ID {idpedido} no encontrado.")
+
+                
                 messages.success(request, f'Pedidos enviados al repartidor{repartidor}')
                 # print(F'esto me trae la sesion{request.session[f'pedidosRepartidor{repartidor}']}')
                 return redirect('homeTortilleriaAdmin')
-            
+        
 
 
 # funcion para guardar la informacion de la tortilleria

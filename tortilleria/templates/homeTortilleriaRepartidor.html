@@ -1,9 +1,8 @@
 <h1>Hola repartidor</h1>
 
-{%for pedido in listaPedido%}
-    {% for item in pedido %}
-    <p>item.domicilio</p>
-    <p>item.horario_entrega</p>
-    <p>item.precio_total</p>
-    {% endfor %}
-{% endfor %}
+
+    {% if pedido.pedidos %}
+    <h4>estos son tus pedidos</h4>
+    {% else %}
+    <h4>sin pedidos disponibles</h4>
+    {% endif %}

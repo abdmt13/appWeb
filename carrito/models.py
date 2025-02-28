@@ -71,6 +71,8 @@ class Pedido(models.Model):
     precio_total = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
     estatus=models.CharField(max_length=1, choices=ESTATUS, default='E')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+   
+
 
     
 
@@ -95,5 +97,5 @@ class Pedido_Producto(models.Model):
 
 class PedidoRepartidor(models.Model):
     repartidor = models.ForeignKey(User, on_delete=models.CASCADE)
-    pedidos = models.JSONField(default=dict)  # Almacena los pedidos en formato JSON
-
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, null=True)  # Almacena los pedidos en formato JSON
+    
