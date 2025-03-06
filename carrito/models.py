@@ -96,6 +96,8 @@ class Pedido_Producto(models.Model):
     
 
 class PedidoRepartidor(models.Model):
-    repartidor = models.ForeignKey(User, on_delete=models.CASCADE)
+    repartidor = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, null=True)  # Almacena los pedidos en formato JSON
     
+    def __str__(self):
+        return f"Pedido {self.pedido} - {self.pedido.domicilio}"

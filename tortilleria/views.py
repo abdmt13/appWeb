@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from carrito.models import Pedido, PedidoRepartidor
+from carrito.models import Pedido, PedidoRepartidor, Pedido_Producto
 from .models import Informacion_Tortilleria, HistorialEmpleado
 from django.contrib.auth.models import Group, User
 from .forms import InformacionTortilleriaForm, AsignarEmpleadoForm, SeleccionaRepartidorForm
@@ -29,33 +29,49 @@ def homeTortilleriaAdmin(request):
     # else:
 
 def homeTortilleriaRepartidor(request):
-    pedidos=PedidoRepartidor.objects.all()
-    print(pedidos)
+    # pedidos=PedidoRepartidor.objects.select_related('pedido').filter(repartidor=request.user.id)
+    # print(pedidos)
+    pedidos=PedidoRepartidor.objects.filter(repartidor=request.user, pedido__domicilio='C')
+    producto=Pedido_Producto.objects.get(pedido=pedidos.pedido)
+    print(f'este esd el producvto: {producto}')
+    return render (request, 'homeTortilleriaRepartidor.html', context={"pedidos":pedidos, "productos":producto})
     
-   
-    return render (request, 'homeTortilleriaRepartidor.html', context={"pedidos":pedidos})
-    
-
+# esto es para la logica del formulario de seleccion de pedidos en el home del admin
 @login_required
 def seleccionarAccion(request): 
     if request.method == 'POST':
         accion = request.POST.get('accion')
-        id_pedido = request.POST.getlist('seleccionados')
-        noPedidos = len(id_pedido)
+        noPedidos = len(request.POST.getlist('seleccionados'))
+        
+        # noPedidos = len(id_pedido)
         if accion == 'repartidor':
-            try:
-                if noPedidos == 0:
+            if noPedidos == 0:
                     messages.error(request, 'No se seleccionó ningún pedido')
-                    return redirect('homeTortilleria')
-                else:
+                    return redirect('homeTortilleriaAdmin')
+            else:
+                try:
+                    
                     form=SeleccionaRepartidorForm()
                     pedidos=request.POST.getlist('seleccionados', None)
-                    print(pedidos)
+                    print(F"esto es lo que trae la liosta de pedidos{pedidos}")
+                    for id in pedidos:
+                        pedidorepartidor=PedidoRepartidor()
+                        pedido=Pedido.objects.get(id=int(id))
+                        pedido.estatus='C'
+                        
+                        
+                        pedidorepartidor.pedido=pedido
+                        pedidorepartidor.save()
+                        pedido.save()
+                        
+                        
                     return render(request, 'forms/seleccionaRepartidor.html', context={'form':form})
                     
-            except: 
-                messages.error(request, 'Error al obtener el pedido')
-                return redirect('homeTortilleria')
+                    
+                except Exception as e:
+                    print(f"Error: {e}") 
+                    messages.error(request, 'Error al obtener el pedido')
+                    return redirect('homeTortilleriaAdmin')
 
            
 
@@ -66,24 +82,19 @@ def seleccionarAccion(request):
         else:
             form=SeleccionaRepartidorForm(request.POST)
             if form.is_valid():
-                repartidor=form.cleaned_data['empleado']
-                
-                pedidos_ids = request.POST.getlist('seleccionados', None)
-                
+                repartidor = form.cleaned_data['empleado']
+                print(f"Este es el repartidor: {repartidor}")
 
-                for idpedido in pedidos_ids:
-                    try:
-                        pedidorepartidor=PedidoRepartidor()
-                        pedido = Pedido.objects.get(id=idpedido)
-                        pedido.estatus = 'C'
-                        pedido.save()
+                try:
+                    # Filtrar pedidos donde el repartidor es NULL
+                    pedidos = PedidoRepartidor.objects.filter(repartidor__isnull=True)
 
-                        pedidorepartidor.repartidor=repartidor.usuario
-                        pedidorepartidor.pedido=pedido
-                        pedidorepartidor.save() # Agrega el diccionario a la lista
-                    except Pedido.DoesNotExist:
-                        # Maneja el caso en que el pedido no existe (opcional)
-                        print(f"Advertencia: Pedido con ID {idpedido} no encontrado.")
+                    for pedido in pedidos:
+                        pedido.repartidor = repartidor.usuario  # Asigna el repartidor
+                        pedido.save()  # Guarda los cambios
+                except PedidoRepartidor.DoesNotExist:
+                    print("Advertencia: No se encontraron pedidos sin repartidor.")
+
 
                 
                 messages.success(request, f'Pedidos enviados al repartidor{repartidor}')

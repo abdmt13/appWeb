@@ -1,8 +1,13 @@
 <h1>Hola repartidor</h1>
 
 
-    {% if pedido.pedidos %}
+    {% if pedidos %}
     <h4>estos son tus pedidos</h4>
+    {% for pedido in pedidos %}
+    <p>pedido: {{pedido}}</p>
+    <p>pedido: {{pedidos}}</p>
+    <p>producto: {{producto.producto.nombre}}</p>
+
     {% else %}
     <h4>sin pedidos disponibles</h4>
     {% endif %}
